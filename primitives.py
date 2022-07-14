@@ -8,12 +8,13 @@ struct_names = [
 
 class Dollar:
     def __init__(self, offset: int, byts: bytes):
-        self.offset = offset
+        self.offset = int(offset)
         self.byts = byts
     
     def read(self, amount: int) -> bytes:
-        self.byts[self.offset:self.offset+amount]
+        read_bytes = self.byts[self.offset:self.offset+amount]
         self.offset += amount
+        return read_bytes
     
     def copy(self):
         return Dollar(self.offset, self.byts)
@@ -38,6 +39,9 @@ class UnsignedLe(Struct):
         super().__init__(name, starting_offset, offset.copy())
     
     def __int__(self):
+        return self.value
+    
+    def __index__(self):
         return self.value
 
 class u8(UnsignedLe):
@@ -72,6 +76,9 @@ class SignedLe(Struct):
         super().__init__(name, starting_offset, offset.copy())
     
     def __int__(self):
+        return self.value
+    
+    def __index__(self):
         return self.value
 
 class s8(SignedLe):
@@ -118,11 +125,11 @@ class Character(Struct):
 
 class char(Character):
     def __init__(self, name: str, offset: Dollar):
-        super().__init__(name, offset)
+        super().__init__(name, offset, 1)
 
 class char16(Character):
     def __init__(self, name: str, offset: Dollar):
-        super().__init__(name, offset)
+        super().__init__(name, offset, 2)
 
 class Bool(Struct):
     def __init__(self, name: str, offset: Dollar):
