@@ -6,17 +6,20 @@ struct_names = [
     "bool"
     ]
 
-class Dollar(int):
+class Dollar:
     def __init__(self, offset: int, byts: bytes):
-        self.parent().__init__(offset)
+        self.offset = offset
         self.byts = byts
     
-    def read(self, amount: int):
+    def read(self, amount: int) -> bytes:
         self.byts[self.offset:self.offset+amount]
         self.offset += amount
     
     def copy(self):
         return Dollar(self.offset, self.byts)
+    
+    def __int__(self):
+        return self.offset
 
 class Struct:
     def __init__(self, name: str, starting_offset: Dollar, end_offset: Dollar):
@@ -33,6 +36,9 @@ class UnsignedLe(Struct):
             self.value += byte * 256**exponent
         
         super().__init__(name, starting_offset, offset.copy())
+    
+    def __int__(self):
+        return self.value
 
 class u8(UnsignedLe):
     def __init__(self, name: str, offset: Dollar):
@@ -64,6 +70,9 @@ class SignedLe(Struct):
         # TODO: make signed
         
         super().__init__(name, starting_offset, offset.copy())
+    
+    def __int__(self):
+        return self.value
 
 class s8(SignedLe):
     def __init__(self, name: str, offset: Dollar):
@@ -129,8 +138,22 @@ class Padding(Struct):
         # TODO
         super().__init__(name, starting_offset, offset.copy())
 
-def sizeof(struct: Struct):
+class BitField(Struct):
+    _bit_field___masks_dict = {
+        1: 0b00000001,
+        2: 0b00000011,
+        3: 0b00000111,
+        4: 0b00001111,
+        5: 0b00011111,
+        6: 0b00111111,
+        7: 0b01111111,
+        8: 0b11111111,
+    }
+    def __init__(self, name: str, starting_offset: Dollar, end_offset: Dollar):
+        super().__init__(name, starting_offset, end_offset)
+
+def sizeof(struct: Struct) -> int:
     return struct.size
 
-def addressof(struct: Struct):
+def addressof(struct: Struct) -> int:
     return struct.address
