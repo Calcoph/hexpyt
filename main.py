@@ -7,6 +7,13 @@ def make_struct(name: str, attributes):
     string = f"""\
 class {name}(Struct):
 {indentation}def __init__(self, _thisstruct_s_name: str, _dollar___offset: Dollar):
+{indentation}{indentation}\"\"\"
+{indentation}{indentation}struct
+
+{indentation}{indentation}Args:
+{indentation}{indentation}{indentation}_thisstruct_s_name (str): The name of this instance. Can be whatever you want or just an empty string
+{indentation}{indentation}{indentation}_dollar___offset (Dollar): Dollar pointing to the start of this struct
+{indentation}{indentation}\"\"\"
 {indentation}{indentation}_dollar___offset_copy = _dollar___offset.copy()\n"""
     for (class_name, att_name, array_length) in attributes:
         string += f"{indentation}{indentation}"
@@ -16,12 +23,12 @@ class {name}(Struct):
             class_name = "Bool"
 
         if class_name == "Padding":
-            string += f"self.{att_name} = {class_name}('{att_name}', _dollar___offset, {array_length})\n"
+            string += f"self.{att_name}: {class_name} = {class_name}('{att_name}', _dollar___offset, {array_length})\n"
         elif class_name == plain_text:
             string += att_name
         else:
             if array_length == 0:
-                string += f"{att_name} = {class_name}('{att_name}', _dollar___offset)\n"
+                string += f"{att_name}: {class_name} = {class_name}('{att_name}', _dollar___offset)\n"
                 string += f"{indentation}{indentation}"
                 string += f"self.{att_name} = {att_name}\n"
             else:
@@ -47,7 +54,14 @@ class {name}(Struct):
 def make_bitfield(name: str, attributes):
     string = f"""\
 class {name}(BitField):
-{indentation}def __init__(self, _thisstruct_s_name: str, _dollar___offset: Dollar):
+{indentation}def __init__(self, _thisbitfield_s_name: str, _dollar___offset: Dollar):
+{indentation}{indentation}\"\"\"
+{indentation}{indentation}bitfield
+
+{indentation}{indentation}Args:
+{indentation}{indentation}{indentation}_thisbitfield_s_name (str): The name of this instance. Can be whatever you want or just an empty string
+{indentation}{indentation}{indentation}_dollar___offset (Dollar): Dollar pointing to the start of this bitfield
+{indentation}{indentation}\"\"\"
 {indentation}{indentation}_dollar___offset_copy = _dollar___offset.copy()
 {indentation}{indentation}cur_byte = _dollar___offset.read(1)[0]\n"""
     size = 0
@@ -59,7 +73,7 @@ class {name}(BitField):
         prev_size = size
         size = prev_size + b_size
         if size > 8:
-            string += f"self.{name} = 0\n"
+            string += f"self.{name}: int = 0\n"
             while size >= 8:
                 bits_to_read = 8-prev_size
                 string += f"{indentation}{indentation}"
@@ -76,10 +90,10 @@ class {name}(BitField):
                 string += f"{indentation}{indentation}"
                 string += f"self.{name} += (cur_byte >> 8-{size}) & self._bit_field___masks_dict[{b_size}]\n"
         else:
-            string += f"self.{name} = (cur_byte >> 8-{size}) & self._bit_field___masks_dict[{b_size}]\n"
+            string += f"self.{name}: int = (cur_byte >> 8-{size}) & self._bit_field___masks_dict[{b_size}]\n"
 
     string += f"{indentation}{indentation}"
-    string += "super().__init__(_thisstruct_s_name, _dollar___offset_copy, _dollar___offset.copy())\n"
+    string += "super().__init__(_thisbitfield_s_name, _dollar___offset_copy, _dollar___offset.copy())\n"
     return string
 
 with open("ignore/testpath.txt", "r") as f:
