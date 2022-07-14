@@ -75,25 +75,42 @@ hexpat definition:
         string += f"{indentation}{indentation}"
         prev_size = size
         size = prev_size + b_size
+        bits_read = 0
         if size > 8:
             string += f"self.{name}: int = 0\n"
+            bits_to_read = 0
             while size >= 8:
+                last_bits_to_read = bits_to_read
                 bits_to_read = 8-prev_size
-                string += f"{indentation}{indentation}"
-                string += f"self.{name} += cur_byte & self._bit_field___masks_dict[{bits_to_read}]\n"
+                if last_bits_to_read == 8:
+                    string += f"{indentation}{indentation}"
+                    string += f"self.{name} <<= 8\n"
+                elif last_bits_to_read == 0:
+                    string += f"{indentation}{indentation}"
+                    string += f"self.{name} += (cur_byte >> 8-{bits_to_read}) & self._bit_field___masks_dict[{bits_to_read}]\n"
+                else:
+                    string += f"{indentation}{indentation}"
+                    string += f"{name} = (cur_byte >> {prev_size}) & self._bit_field___masks_dict[{b_size}]\n"
+                    string += f"{indentation}{indentation}"
+                    string += f"self.{name} += {name} << {last_bits_to_read}\n"
                 prev_size = 0
                 b_size -= bits_to_read
                 if b_size > 0:
                     string += f"{indentation}{indentation}"
-                    string += f"self.{name} <<= {b_size%8}\n"
-                    string += f"{indentation}{indentation}"
                     string += f"cur_byte = _dollar___offset.read(1)[0]\n"
                 size -= 8
+                bits_read += bits_to_read
             if b_size > 0:
-                string += f"{indentation}{indentation}"
-                string += f"self.{name} += (cur_byte >> 8-{size}) & self._bit_field___masks_dict[{b_size}]\n"
+                if bits_read % 8 == 0:
+                    string += f"{indentation}{indentation}"
+                    string += f"self.{name} += (cur_byte >> {prev_size%8}) & self._bit_field___masks_dict[{b_size}]\n"
+                else:
+                    string += f"{indentation}{indentation}"
+                    string += f"{name} = (cur_byte >> {prev_size%8}) & self._bit_field___masks_dict[{b_size}]\n"
+                    string += f"{indentation}{indentation}"
+                    string += f"self.{name} += {name} << {bits_read%8}\n"
         else:
-            string += f"self.{name}: int = (cur_byte >> 8-{size}) & self._bit_field___masks_dict[{b_size}]\n"
+            string += f"self.{name}: int = (cur_byte >>{prev_size%8}) & self._bit_field___masks_dict[{b_size}]\n"
 
     string += f"{indentation}{indentation}"
     string += "super().__init__(_thisbitfield_s_name, _dollar___offset_copy, _dollar___offset.copy())\n"
