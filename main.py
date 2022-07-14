@@ -25,7 +25,7 @@ class {name}(Struct):
                 string += f"{indentation}{indentation}"
                 string += f"self.{att_name} = {att_name}\n"
             else:
-                string += f"self.{att_name} = []\n"
+                string += f"self.{att_name}: list[{class_name}] = []\n"
                 string += f"{indentation}{indentation}"
                 string += f"for i in range(0,{array_length}):\n"
                 string += f"{indentation}{indentation}{indentation}"
