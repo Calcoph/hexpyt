@@ -16,7 +16,7 @@ class {name}(Struct):
             class_name = "Bool"
 
         if class_name == "Padding":
-            string += f"self.{att_name} = {class_name}('{att_name}', _dollar___offset, {length})\n"
+            string += f"self.{att_name} = {class_name}('{att_name}', _dollar___offset, {array_length})\n"
         elif class_name == plain_text:
             string += att_name
         else:
@@ -74,9 +74,13 @@ for line in lines:
             words = line.split(" ")
             try_padding = words[0].split("[")
             if try_padding[0] == "padding":
-                length = try_padding[1].split("]")[0]
-                if length not in current_struct_attribs:
-                    length = int(length)
+                length = try_padding[1]
+                i = 2
+                while "]" not in try_padding[1]:
+                    length += words[i]
+                    i += 1
+                length = length.split("]")[0]
+                length = f"eval('{length}')"
                 pad_name = f"padding_{padding_count}"
                 padding_count += 1
                 attribs.append(("Padding", pad_name, length))
@@ -85,11 +89,12 @@ for line in lines:
                 att_name = words[1]
                 if "[" in att_name:
                     (att_name, length) = att_name.split("[")
+                    i = 2
+                    while "]" not in length:
+                        length += " " + words[i]
+                        i += 1
                     length = length.split("]")[0]
-                    if length in current_struct_attribs:
-                        length = f"self.{length}"
-                    else:
-                        length = int(length)
+                    length = f"eval('{length}')"
                     attribs.append((class_name, att_name, length))
                     current_struct_attribs.append(att_name)
                 else:
@@ -106,6 +111,7 @@ for line in lines:
                     indentation_count += 1
                     line = line.replace(" {", ":")
                     line = line.replace("{", ":")
+                line = line.replace("//", "#")
                 attribs.append((plain_text,
                                 line,
                                 0
