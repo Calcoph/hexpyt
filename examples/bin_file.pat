@@ -1,7 +1,8 @@
 bitfield Flags {
     unused: 4;
     f_variable: 1;
-    f_u16: 1;
+    // This comment will appear in the .py file
+    f_u16: 1; // This comment won't appear in the .py file
     f_u32: 1;
 };
 

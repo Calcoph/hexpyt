@@ -1,8 +1,8 @@
 Convert your hexpat (ImHex's pattern language) scripts to python scripts.
 
-You can see the documentation of the language [here](https://imhex.werwolv.net/docs/): [ImHex docs](https://imhex.werwolv.net/docs/)
+You can see the documentation of the language [here](https://imhex.werwolv.net/docs/): [ImHex docs.](https://imhex.werwolv.net/docs/)
 
-This project is incomplete so it won't parse entire scripts completely. It is not forgiving with the formatting of the input file, you can see valid input files in the `examples` folder.
+This project is incomplete so it won't parse entire scripts completely. It is not forgiving with the formatting of the input file, you can see valid input files in the `examples` folder. `bad_and_good_examples.pat` and `bad_and_good_examples.py` can act as a quick troubleshooting guide.
 
 # Features
 * Turn structs into python classes
