@@ -31,9 +31,8 @@ class Struct:
 class UnsignedLe(Struct):
     def __init__(self, name: str, offset: Dollar, length: bytes):
         starting_offset = offset.copy()
-        exponent = 0
         self.value = 0
-        for (exponent, byte) in enumerate(reversed(offset.read(length))):
+        for (exponent, byte) in enumerate(offset.read(length)):
             self.value += byte * 256**exponent
         
         super().__init__(name, starting_offset, offset.copy())
@@ -142,7 +141,6 @@ class Padding(Struct):
     def __init__(self, name: str, offset: Dollar, length: int):
         starting_offset = offset.copy()
         self.value = offset.read(length)
-        # TODO
         super().__init__(name, starting_offset, offset.copy())
 
 class BitField(Struct):
