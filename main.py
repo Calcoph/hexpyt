@@ -3,9 +3,13 @@ import primitives
 plain_text = "PlainText_thisisalongnameonpurposesonobodywoulduseitonaccident"
 indentation = "    "
 
-def make_struct(name: str, attributes):
+def make_struct(name: str, attributes: list[tuple[str, str, int]], docstring: str):
     string = f"""\
 class {name}(Struct):
+{indentation}\"\"\"
+hexpat definition:
+```hexpat
+{docstring}```\"\"\"
 {indentation}def __init__(self, _thisstruct_s_name: str, _dollar___offset: Dollar):
 {indentation}{indentation}\"\"\"
 {indentation}{indentation}struct
@@ -42,18 +46,13 @@ class {name}(Struct):
     string += "super().__init__(_thisstruct_s_name, _dollar___offset_copy, _dollar___offset.copy())\n"
     return string
 
-"""bitfield Params {
-	unknown: 4;
-	width: 3;
-	height: 3;
-	format: 3;
-	cPalette_id: 1;
-	unknown: 2;
-};"""
-
-def make_bitfield(name: str, attributes):
+def make_bitfield(name: str, attributes: list[tuple[str, int]], docstring: str):
     string = f"""\
 class {name}(BitField):
+{indentation}\"\"\"
+hexpat definition:
+```hexpat
+{docstring}{indentation}```\"\"\"
 {indentation}def __init__(self, _thisbitfield_s_name: str, _dollar___offset: Dollar):
 {indentation}{indentation}\"\"\"
 {indentation}{indentation}bitfield
@@ -62,6 +61,7 @@ class {name}(BitField):
 {indentation}{indentation}{indentation}_thisbitfield_s_name (str): The name of this instance. Can be whatever you want or just an empty string
 {indentation}{indentation}{indentation}_dollar___offset (Dollar): Dollar pointing to the start of this bitfield
 {indentation}{indentation}\"\"\"
+
 {indentation}{indentation}_dollar___offset_copy = _dollar___offset.copy()
 {indentation}{indentation}cur_byte = _dollar___offset.read(1)[0]\n"""
     size = 0
@@ -106,6 +106,7 @@ padding_count = 0
 final_string = "from primitives import Dollar, Struct, u8, u16, u32, u64, u128, s8, s16, s32, s64, s128, Float, double, char, char16, Bool, Padding, BitField, sizeof, addressof\n\n"
 struct_name = ""
 bitfield_name = ""
+docstring = ""
 type_names = primitives.struct_names
 current_attribs = []
 attribs = []
@@ -114,6 +115,7 @@ for line in lines:
     if struct_name == "" and bitfield_name == "":
         words = line.split(" ")
         if words[0] == "struct":
+            docstring = line
             final_string += "\n"
             struct_name = list(words[1])
             if struct_name[-1] == "\n":
@@ -122,7 +124,8 @@ for line in lines:
                 struct_name = struct_name[:-1]
             struct_name = "".join(struct_name)
             type_names.append(struct_name)
-        if words[0] == "bitfield":
+        elif words[0] == "bitfield":
+            docstring = line
             final_string += "\n"
             bitfield_name = list(words[1])
             if bitfield_name[-1] == "\n":
@@ -133,11 +136,13 @@ for line in lines:
             type_names.append(bitfield_name)
 
     elif struct_name != "":
+        docstring += line
         if line[0] == "}":
-            final_string += make_struct(struct_name, attribs)
+            final_string += make_struct(struct_name, attribs, docstring)
             attribs = []
             current_attribs = []
             struct_name = ""
+            docstring = ""
         else:
             line = line.lstrip()
             line = line.rstrip()
@@ -190,11 +195,13 @@ for line in lines:
                               ))
 
     elif bitfield_name != "":
+        docstring += line
         if line[0] == "}":
-            final_string += make_bitfield(bitfield_name, attribs)
+            final_string += make_bitfield(bitfield_name, attribs, docstring)
             attribs = []
             current_attribs = []
             bitfield_name = ""
+            docstring = ""
         else:
             line = line.lstrip()
             line = line.rstrip()
