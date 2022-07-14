@@ -6,8 +6,8 @@ indentation = "    "
 def make_struct(name: str, attributes):
     string = f"""\
 class {name}(Struct):
-{indentation}def __init__(self, name: str, offset: Dollar):
-{indentation}{indentation}starting_offset = offset.copy()\n"""
+{indentation}def __init__(self, _thisstruct_s_name: str, _dollar___offset: Dollar):
+{indentation}{indentation}_dollar___offset_copy = _dollar___offset.copy()\n"""
     for (class_name, att_name, array_length) in attributes:
         string += f"{indentation}{indentation}"
         if class_name == "float":
@@ -16,12 +16,12 @@ class {name}(Struct):
             class_name = "Bool"
 
         if class_name == "Padding":
-            string += f"self.{att_name} = {class_name}('{att_name}', offset, {length})\n"
+            string += f"self.{att_name} = {class_name}('{att_name}', _dollar___offset, {length})\n"
         elif class_name == plain_text:
             string += att_name
         else:
             if array_length == 0:
-                string += f"{att_name} = {class_name}('{att_name}', offset)\n"
+                string += f"{att_name} = {class_name}('{att_name}', _dollar___offset)\n"
                 string += f"{indentation}{indentation}"
                 string += f"self.{att_name} = {att_name}\n"
             else:
@@ -29,10 +29,10 @@ class {name}(Struct):
                 string += f"{indentation}{indentation}"
                 string += f"for i in range(0,{array_length}):\n"
                 string += f"{indentation}{indentation}{indentation}"
-                string += f"self.{att_name}.append({class_name}(f'{att_name}_{{i}}', offset))\n"
+                string += f"self.{att_name}.append({class_name}(f'{att_name}_{{i}}', _dollar___offset))\n"
 
     string += f"{indentation}{indentation}"
-    string += "super().__init__(name, starting_offset, offset.copy())\n"
+    string += "super().__init__(_thisstruct_s_name, _dollar___offset_copy, _dollar___offset.copy())\n"
     return string
 
 with open("ignore/testpath.txt", "r") as f:
@@ -70,7 +70,7 @@ for line in lines:
             line = line.lstrip()
             line = line.rstrip()
             line = line.split(";")[0]
-            line = line.replace("$", "offset")
+            line = line.replace("$", "_dollar___offset")
             words = line.split(" ")
             try_padding = words[0].split("[")
             if try_padding[0] == "padding":
