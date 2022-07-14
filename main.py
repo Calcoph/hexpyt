@@ -1,8 +1,9 @@
 import primitives
 
 plain_text = "PlainText_thisisalongnameonpurposesonobodywoulduseitonaccident"
+indentation = "    "
 
-def make_struct(name: str, attributes, indentation: str="    "):
+def make_struct(name: str, attributes):
     string = f"""\
 class {name}(Struct):
 {indentation}def __init__(self, name: str, offset: Dollar):
@@ -20,7 +21,9 @@ class {name}(Struct):
             string += att_name
         else:
             if array_length == 0:
-                string += f"self.{att_name} = {class_name}('{att_name}', offset)\n"
+                string += f"{att_name} = {class_name}('{att_name}', offset)\n"
+                string += f"{indentation}{indentation}"
+                string += f"self.{att_name} = {att_name}\n"
             else:
                 string += f"self.{att_name} = []\n"
                 string += f"{indentation}{indentation}"
@@ -39,11 +42,12 @@ with open(file_path, "r") as f:
     lines = f.readlines()
 
 padding_count = 0
-final_string = "from primitives import Dollar, Struct, u8, u16, u32, u64, u128, s8, s16, s32, s64, s128, Float, double, char, char16, Bool, Padding\n\n"
+final_string = "from primitives import Dollar, Struct, u8, u16, u32, u64, u128, s8, s16, s32, s64, s128, Float, double, char, char16, Bool, Padding, sizeof, addressof\n\n"
 struct_name = ""
 struct_names = primitives.struct_names
 current_struct_attribs = []
 attribs = []
+indentation_count = 0
 for line in lines:
     if struct_name == "":
         words = line.split(" ")
@@ -66,13 +70,12 @@ for line in lines:
             line = line.lstrip()
             line = line.rstrip()
             line = line.split(";")[0]
+            line = line.replace("$", "offset")
             words = line.split(" ")
             try_padding = words[0].split("[")
             if try_padding[0] == "padding":
                 length = try_padding[1].split("]")[0]
-                if length in current_struct_attribs:
-                    length = f"self.{length}"
-                else:
+                if length not in current_struct_attribs:
                     length = int(length)
                 pad_name = f"padding_{padding_count}"
                 padding_count += 1
@@ -93,9 +96,18 @@ for line in lines:
                     attribs.append((class_name, att_name, 0))
                     current_struct_attribs.append(att_name)
             else:
-                print(words[0])
+                if "}" in line:
+                    indentation_count -= 1
+                    line = line.replace("}", "")
+                for _ in range(0, indentation_count):
+                    line = indentation + line
+                line += "\n"
+                if "{" in line:
+                    indentation_count += 1
+                    line = line.replace(" {", ":")
+                    line = line.replace("{", ":")
                 attribs.append((plain_text,
-                                line + "\n",
+                                line,
                                 0
                               ))
 

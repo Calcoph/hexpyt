@@ -128,3 +128,9 @@ class Padding(Struct):
         self.value = offset.read(length)
         # TODO
         super().__init__(name, starting_offset, offset.copy())
+
+def sizeof(struct: Struct):
+    return struct.size
+
+def addressof(struct: Struct):
+    return struct.address
