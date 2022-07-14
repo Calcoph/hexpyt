@@ -3,7 +3,7 @@ import primitives
 plain_text = "PlainText_thisisalongnameonpurposesonobodywoulduseitonaccident"
 indentation = "    "
 
-def make_struct(name: str, attributes: list[tuple[str, str, int]], docstring: str):
+def make_struct(name: str, attributes: list[tuple[str, str, int, int]], docstring: str):
     string = f"""\
 class {name}(Struct):
 {indentation}\"\"\"
@@ -19,8 +19,11 @@ hexpat definition:
 {indentation}{indentation}{indentation}_dollar___offset (Dollar): Dollar pointing to the start of this struct
 {indentation}{indentation}\"\"\"
 {indentation}{indentation}_dollar___offset_copy = _dollar___offset.copy()\n"""
-    for (class_name, att_name, array_length) in attributes:
-        string += f"{indentation}{indentation}"
+    for (class_name, att_name, array_length, indentation_count) in attributes:
+        current_indentation = ""
+        for i in range(0, indentation_count):
+            current_indentation += f"{indentation}"
+        string += f"{indentation}{indentation}{current_indentation}"
         if class_name == "float":
             class_name = "Float"
         elif class_name == "bool":
@@ -33,13 +36,13 @@ hexpat definition:
         else:
             if array_length == 0:
                 string += f"{att_name}: {class_name} = {class_name}('{att_name}', _dollar___offset)\n"
-                string += f"{indentation}{indentation}"
+                string += f"{indentation}{indentation}{current_indentation}"
                 string += f"self.{att_name} = {att_name}\n"
             else:
                 string += f"self.{att_name}: list[{class_name}] = []\n"
-                string += f"{indentation}{indentation}"
+                string += f"{indentation}{indentation}{current_indentation}"
                 string += f"for i in range(0,{array_length}):\n"
-                string += f"{indentation}{indentation}{indentation}"
+                string += f"{indentation}{indentation}{current_indentation}{indentation}"
                 string += f"self.{att_name}.append({class_name}(f'{att_name}_{{i}}', _dollar___offset))\n"
 
     string += f"{indentation}{indentation}"
@@ -160,7 +163,7 @@ for line in lines:
                 length = f"eval('{length}')"
                 pad_name = f"padding_{padding_count}"
                 padding_count += 1
-                attribs.append(("Padding", pad_name, length))
+                attribs.append(("Padding", pad_name, length, indentation_count))
             elif words[0] in type_names:
                 class_name = words[0]
                 att_name = words[1]
@@ -172,17 +175,16 @@ for line in lines:
                         i += 1
                     length = length.split("]")[0]
                     length = f"eval('{length}')"
-                    attribs.append((class_name, att_name, length))
+                    attribs.append((class_name, att_name, length, indentation_count))
                     current_attribs.append(att_name)
                 else:
-                    attribs.append((class_name, att_name, 0))
+                    attribs.append((class_name, att_name, 0, indentation_count))
                     current_attribs.append(att_name)
             else:
                 if "}" in line:
                     indentation_count -= 1
                     line = line.replace("}", "")
-                for _ in range(0, indentation_count):
-                    line = indentation + line
+                cur_indent = indentation_count
                 line += "\n"
                 if "{" in line:
                     indentation_count += 1
@@ -191,7 +193,8 @@ for line in lines:
                 line = line.replace("//", "#")
                 attribs.append((plain_text,
                                 line,
-                                0
+                                0,
+                                cur_indent
                               ))
 
     elif bitfield_name != "":
