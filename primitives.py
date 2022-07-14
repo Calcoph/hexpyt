@@ -1,3 +1,11 @@
+struct_names = [
+    "u8", "u16", "u32", "u64", "u128",
+    "s8", "s16", "s32", "s64", "s128",
+    "float", "double",
+    "char", "char16",
+    "bool"
+    ]
+
 class Dollar(int):
     def __init__(self, offset: int, byts: bytes):
         self.parent().__init__(offset)
