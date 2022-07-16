@@ -1,9 +1,10 @@
+from typing import List, Tuple
 import primitives
 
 plain_text = "PlainText_thisisalongnameonpurposesonobodywoulduseitonaccident"
 indentation = "    "
 
-def make_struct(name: str, attributes: list[tuple[str, str, int, int]], docstring: str):
+def make_struct(name: str, attributes: List[Tuple[str, str, int, int]], docstring: str):
     string = f"""\
 class {name}(Struct):
 {indentation}\"\"\"
@@ -39,7 +40,7 @@ hexpat definition:
                 string += f"{indentation}{indentation}{current_indentation}"
                 string += f"self.{att_name} = {att_name}\n"
             else:
-                string += f"self.{att_name}: list[{class_name}] = []\n"
+                string += f"self.{att_name}: List[{class_name}] = []\n"
                 string += f"{indentation}{indentation}{current_indentation}"
                 string += f"for i in range(0,{array_length}):\n"
                 string += f"{indentation}{indentation}{current_indentation}{indentation}"
@@ -49,7 +50,7 @@ hexpat definition:
     string += "super().__init__(_thisstruct_s_name, _dollar___offset_copy, _dollar___offset.copy())\n"
     return string
 
-def make_bitfield(name: str, attributes: list[tuple[str, int]], docstring: str):
+def make_bitfield(name: str, attributes: List[Tuple[str, int]], docstring: str):
     string = f"""\
 class {name}(BitField):
 {indentation}\"\"\"
@@ -121,7 +122,8 @@ def translate_file(input_file_path: str, output_file_path):
         lines = f.readlines()
 
     padding_count = 0
-    final_string = "from primitives import Dollar, Struct, u8, u16, u32, u64, u128, s8, s16, s32, s64, s128, Float, double, char, char16, Bool, Padding, BitField, sizeof, addressof\n\n"
+    final_string = "from typing import List"
+    final_string += "from primitives import Dollar, Struct, u8, u16, u32, u64, u128, s8, s16, s32, s64, s128, Float, double, char, char16, Bool, Padding, BitField, sizeof, addressof\n\n"
     struct_name = ""
     bitfield_name = ""
     docstring = ""
