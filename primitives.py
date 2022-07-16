@@ -1,3 +1,5 @@
+import struct
+
 struct_names = [
     "u8", "u16", "u32", "u64", "u128",
     "s8", "s16", "s32", "s64", "s128",
@@ -5,6 +7,12 @@ struct_names = [
     "char", "char16",
     "bool"
     ]
+
+def le_to_int(byts: bytes):
+    value = 0
+    for (exponent, byte) in enumerate(byts):
+        value += byte * 256**exponent
+    return value
 
 class Dollar:
     def __init__(self, offset: int, byts: bytes):
@@ -398,9 +406,7 @@ class IntStruct(Struct):
 class UnsignedLe(IntStruct):
     def __init__(self, name: str, offset: Dollar, length: bytes):
         starting_offset = offset.copy()
-        self.value = 0
-        for (exponent, byte) in enumerate(offset.read(length)):
-            self.value += byte * 256**exponent
+        self.value = le_to_int(offset.read(length))
         
         super().__init__(name, starting_offset, offset.copy())
 
@@ -427,10 +433,16 @@ class u128(UnsignedLe):
 class SignedLe(IntStruct):
     def __init__(self, name: str, offset: Dollar, length: int):
         starting_offset = offset.copy()
-        self.value = 0
-        for (exponent, byte) in enumerate(offset.read(length)):
-            self.value += byte * 256**exponent
-        # TODO: make signed
+        self.value = le_to_int(offset.read(length))
+        
+        negative_threshold_bytes = b'\x80'
+        for i in range(1,length):
+            negative_threshold_bytes = b'\x00' + negative_threshold_bytes
+        negative_threshold = 0
+        for (exponent, byte) in enumerate(offset.read(negative_threshold_bytes)):
+            negative_threshold += byte * 256**exponent
+        max_ = negative_threshold*2+1
+        self.value = -(max_ - self.value)-1
         
         super().__init__(name, starting_offset, offset.copy())
 
@@ -458,7 +470,11 @@ class RealNum(Struct):
     def __init__(self, name: str, offset: Dollar, length: int):
         starting_offset = offset.copy()
         self.value = offset.read(length)
-        # TODO
+        if length == 4:
+            format_ = "<f"
+        elif length == 8:
+            format_ = "<d"
+        self.value = struct.unpack(format_, self.value)
         super().__init__(name, starting_offset, offset.copy())
 
 class Float(RealNum):
@@ -473,7 +489,7 @@ class Character(Struct):
     def __init__(self, name: str, offset: Dollar, length: int):
         starting_offset = offset.copy()
         self.value = offset.read(length)
-        # TODO
+        self.value = "".join(map(chr, self.value))
         super().__init__(name, starting_offset, offset.copy())
 
 class char(Character):
@@ -485,10 +501,20 @@ class char16(Character):
         super().__init__(name, offset, 2)
 
 class Bool(Struct):
-    def __init__(self, name: str, offset: Dollar):
+    def __init__(self, name: str, offset: Dollar, false_range=range(0x00,0x01), true_range=range(0x01,0xFF)):
         starting_offset = offset.copy()
-        self.value = offset.read(1)
-        # TODO
+        self.value = le_to_int(offset.read(1))
+        if false_range == range(0x00,0x01):
+            if self.value in true_range:
+                self.value = True
+            else:
+                self.value = False
+        else:
+            if self.value in false_range:
+                self.value = False
+            else:
+                self.value = True
+
         super().__init__(name, starting_offset, offset.copy())
 
 class Padding(Struct):
