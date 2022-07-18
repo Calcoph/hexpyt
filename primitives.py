@@ -211,20 +211,25 @@ class Dollar:
         return self.offset.__ceil__()
 
 class Struct:
-    def __init__(self, name: str, starting_offset: Dollar, end_offset: Dollar):
+    def __init__(self, name: str=""):
         self.name = name
+    
+    def init_struct(self, starting_offset: Dollar, end_offset: Dollar):
         self.address = starting_offset.offset
         self.size = end_offset.offset
 
 class IntStruct(Struct):
-    def __init__(self, name: str, starting_offset: Dollar, end_offset: Dollar):
-        super().__init__(name, starting_offset, end_offset)
+    def __init__(self, name: str=""):
+        super().__init__(name)
 
     def __repr__(self):
         return self.value.__repr__()
     
     def __str__(self):
         return self.value.__str__()
+
+    def __format__(self, format_spec):
+        return self.value.__format__(format_spec)
 
     def __lt__(self, other):
         return self.value.__lt__(other)
@@ -404,124 +409,207 @@ class IntStruct(Struct):
         return self.value
 
 class UnsignedLe(IntStruct):
-    def __init__(self, name: str, offset: Dollar, length: bytes):
-        starting_offset = offset.copy()
-        self.value = le_to_int(offset.read(length))
-        
-        super().__init__(name, starting_offset, offset.copy())
+    def __init__(self, length: int, value: int=0, name: str=""):
+        self.length = length
+        self.value = value
+        super().__init__(name)
+    
+    def __matmul__(self, other):
+        if not isinstance(other, Dollar):
+            raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {type(other)} was used instead')
+        starting_offset = other.copy()
+        self.value = le_to_int(other.read(self.length))
+        super().init_struct(starting_offset, other.copy())
+        return self
 
 class u8(UnsignedLe):
-    def __init__(self, name: str, offset: Dollar):
-        super().__init__(name, offset, 1)
+    def __init__(self, value: int=0, name: str=""):
+        super().__init__(1, value, name)
 
 class u16(UnsignedLe):
-    def __init__(self, name: str, offset: Dollar):
-        super().__init__(name, offset, 2)
+    def __init__(self, value: int=0, name: str=""):
+        super().__init__(2, value, name)
 
 class u32(UnsignedLe):
-    def __init__(self, name: str, offset: Dollar):
-        super().__init__(name, offset, 4)
+    def __init__(self, value: int=0, name: str=""):
+        super().__init__(4, value, name)
 
 class u64(UnsignedLe):
-    def __init__(self, name: str, offset: Dollar):
-        super().__init__(name, offset, 8)
+    def __init__(self, value: int=0, name: str=""):
+        super().__init__(8, value, name)
 
 class u128(UnsignedLe):
-    def __init__(self, name: str, offset: Dollar):
-        super().__init__(name, offset, 8)
+    def __init__(self, value: int=0, name: str=""):
+        super().__init__(16, value, name)
 
 class SignedLe(IntStruct):
-    def __init__(self, name: str, offset: Dollar, length: int):
-        starting_offset = offset.copy()
-        self.value = le_to_int(offset.read(length))
+    def __init__(self, length: int, value: int=0, name: str=""):
+        self.length = length
+        self.value = value
+        super().__init__(name)
+
+    def __matmul__(self, other):
+        if not isinstance(other, Dollar):
+            raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {type(other)} was used instead')
+        starting_offset = other.copy()
+        self.value = le_to_int(other.read(self.length))
         
         negative_threshold_bytes = b'\x80'
-        for i in range(1,length):
+        for _ in range(1,self.length):
             negative_threshold_bytes = b'\x00' + negative_threshold_bytes
         negative_threshold = 0
-        for (exponent, byte) in enumerate(offset.read(negative_threshold_bytes)):
+        for (exponent, byte) in enumerate(other.read(negative_threshold_bytes)):
             negative_threshold += byte * 256**exponent
         max_ = negative_threshold*2+1
         self.value = -(max_ - self.value)-1
-        
-        super().__init__(name, starting_offset, offset.copy())
+        super().init_struct(starting_offset, other.copy())
+        return self
 
 class s8(SignedLe):
-    def __init__(self, name: str, offset: Dollar):
-        super().__init__(name, offset, 1)
+    def __init__(self, value: int=0, name: str=""):
+        super().__init__(1, value, name)
 
 class s16(SignedLe):
-    def __init__(self, name: str, offset: Dollar):
-        super().__init__(name, offset, 2)
+    def __init__(self, value: int=0, name: str=""):
+        super().__init__(2, value, name)
 
 class s32(SignedLe):
-    def __init__(self, name: str, offset: Dollar):
-        super().__init__(name, offset, 4)
+    def __init__(self, value: int=0, name: str=""):
+        super().__init__(4, value, name)
 
 class s64(SignedLe):
-    def __init__(self, name: str, offset: Dollar):
-        super().__init__(name, offset, 8)
+    def __init__(self, value: int=0, name: str=""):
+        super().__init__(8, value, name)
 
 class s128(SignedLe):
-    def __init__(self, name: str, offset: Dollar):
-        super().__init__(name, offset, 8)
+    def __init__(self, value: int=0, name: str=""):
+        super().__init__(16, value, name)
 
 class RealNum(Struct):
-    def __init__(self, name: str, offset: Dollar, length: int):
-        starting_offset = offset.copy()
-        self.value = offset.read(length)
-        if length == 4:
+    def __init__(self, length: int, value: float=0.0, name: str=""):
+        self.length = length
+        self.value = value
+        super().__init__(name)
+    
+    def __matmul__(self, other):
+        if not isinstance(other, Dollar):
+            raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {type(other)} was used instead')
+        starting_offset = other.copy()
+        self.value = other.read(self.length)
+        if self.length == 4:
             format_ = "<f"
-        elif length == 8:
+        elif self.length == 8:
             format_ = "<d"
         self.value = struct.unpack(format_, self.value)
-        super().__init__(name, starting_offset, offset.copy())
+        super().init_struct(starting_offset, other.copy())
+        return self
+    
+    def __repr__(self):
+        return self.value.__repr__()
+    
+    def __str__(self):
+        return self.value.__str__()
+
+    def __format__(self, format_spec):
+        return self.value.__format__(format_spec)
 
 class Float(RealNum):
-    def __init__(self, name: str, offset: Dollar):
-        super().__init__(name, offset, 4)
+    def __init__(self, value: float=0.0, name: str=""):
+        super().__init__(4, value, name)
 
 class double(RealNum):
-    def __init__(self, name: str, offset: Dollar):
-        super().__init__(name, offset, 8)
+    def __init__(self, value: float=0.0, name: str=""):
+        super().__init__(8, value, name)
 
 class Character(Struct):
-    def __init__(self, name: str, offset: Dollar, length: int):
-        starting_offset = offset.copy()
-        self.value = offset.read(length)
+    def __init__(self, length: int, value: str="\0", name: str=""):
+        self.length = length
+        self.value = value
+        super().__init__(name)
+    
+    def __matmul__(self, other):
+        if not isinstance(other, Dollar):
+            raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {type(other)} was used instead')
+        starting_offset = other.copy()
+        self.value = other.read(self.length)
         self.value = "".join(map(chr, self.value))
-        super().__init__(name, starting_offset, offset.copy())
+        super().init_struct(starting_offset, other.copy())
+        return self
+
+    def __repr__(self):
+        return self.value.__repr__()
+    
+    def __str__(self):
+        return self.value.__str__()
+
+    def __format__(self, format_spec):
+        return self.value.__format__(format_spec)
 
 class char(Character):
-    def __init__(self, name: str, offset: Dollar):
-        super().__init__(name, offset, 1)
+    def __init__(self, value: str="\0", name: str=""):
+        super().__init__(1, value, name)
 
 class char16(Character):
-    def __init__(self, name: str, offset: Dollar):
-        super().__init__(name, offset, 2)
+    def __init__(self, value: str="\0\0", name: str=""):
+        super().__init__(2, value, name)
 
 class Bool(Struct):
-    def __init__(self, name: str, offset: Dollar, false_range=range(0x00,0x01), true_range=range(0x01,0xFF)):
-        starting_offset = offset.copy()
-        self.value = le_to_int(offset.read(1))
-        if false_range == range(0x00,0x01):
-            if self.value in true_range:
+    def __init__(self, value: bool=False, name: str="", false_range=range(0x00,0x01), true_range=range(0x01,0xFF)):
+        self.false_range = false_range
+        self.true_range = true_range
+        self.value = value
+        super().__init__(name)
+    
+    def __matmul__(self, other):
+        if not isinstance(other, Dollar):
+            raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {type(other)} was used instead')
+        starting_offset = other.copy()
+        self.value = le_to_int(other.read(1))
+        if self.false_range == range(0x00,0x01):
+            if self.value in self.true_range:
                 self.value = True
             else:
                 self.value = False
         else:
-            if self.value in false_range:
+            if self.value in self.false_range:
                 self.value = False
             else:
                 self.value = True
 
-        super().__init__(name, starting_offset, offset.copy())
+        super().init_struct(starting_offset, other.copy())
+        return self
+    
+    def __repr__(self):
+        return self.value.__repr__()
+    
+    def __str__(self):
+        return self.value.__str__()
+
+    def __format__(self, format_spec):
+        return self.value.__format__(format_spec)
 
 class Padding(Struct):
-    def __init__(self, name: str, offset: Dollar, length: int):
-        starting_offset = offset.copy()
-        self.value = offset.read(length)
-        super().__init__(name, starting_offset, offset.copy())
+    def __init__(self, length: int, value: int=0, name: str=""):
+        self.length = length
+        self.value = value
+        super().__init__(name)
+    
+    def __matmul__(self, other):
+        if not isinstance(other, Dollar):
+            raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {type(other)} was used instead')
+        starting_offset = other.copy()
+        self.value = other.read(self.length)
+        super().init_struct(starting_offset, other.copy())
+        return self
+    
+    def __repr__(self):
+        return f"padding[{self.length}]"
+    
+    def __str__(self):
+        return f"padding[{self.length}]"
+
+    def __format__(self, format_spec):
+        return f"padding[{self.length}]".__format__(format_spec)
 
 class BitField(Struct):
     _bit_field___masks_dict = {
@@ -534,8 +622,8 @@ class BitField(Struct):
         7: 0b01111111,
         8: 0b11111111,
     }
-    def __init__(self, name: str, starting_offset: Dollar, end_offset: Dollar):
-        super().__init__(name, starting_offset, end_offset)
+    def __init__(self, name: str=""):
+        super().__init__(name)
 
 def sizeof(struct: Struct) -> int:
     return struct.size

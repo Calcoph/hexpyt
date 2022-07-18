@@ -10,16 +10,22 @@ class {name}(Struct):
 {indentation}\"\"\"
 hexpat definition:
 ```hexpat
-{docstring}```\"\"\"
-{indentation}def __init__(self, _thisstruct_s_name: str, _dollar___offset: Dollar):
+{docstring}
+```\"\"\"
+{indentation}def __init__(self, name: str=""):
 {indentation}{indentation}\"\"\"
 {indentation}{indentation}struct
 
 {indentation}{indentation}Args:
-{indentation}{indentation}{indentation}_thisstruct_s_name (str): The name of this instance. Can be whatever you want or just an empty string
-{indentation}{indentation}{indentation}_dollar___offset (Dollar): Dollar pointing to the start of this struct
+{indentation}{indentation}{indentation}name (str, optional): The name of this instance. Can be whatever you want or just an empty string. Defaults to "".
 {indentation}{indentation}\"\"\"
-{indentation}{indentation}_dollar___offset_copy = _dollar___offset.copy()\n"""
+{indentation}{indentation}super().__init__(name)
+
+{indentation}def __matmul__(self, _dollar___offset):
+{indentation}{indentation}if not isinstance(_dollar___offset, Dollar):
+{indentation}{indentation}{indentation}raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {{type(_dollar___offset_copy)}} was used instead')
+{indentation}{indentation}_dollar___offset_copy = _dollar___offset.copy()
+"""
     for (class_name, att_name, array_length, indentation_count) in attributes:
         current_indentation = ""
         for i in range(0, indentation_count):
@@ -31,12 +37,12 @@ hexpat definition:
             class_name = "Bool"
 
         if class_name == "Padding":
-            string += f"self.{att_name}: {class_name} = {class_name}('{att_name}', _dollar___offset, {array_length})\n"
+            string += f"self.{att_name}: {class_name} = {class_name}({array_length}, '{att_name}') @ _dollar___offset\n"
         elif class_name == plain_text:
             string += att_name
         else:
             if array_length == 0:
-                string += f"{att_name}: {class_name} = {class_name}('{att_name}', _dollar___offset)\n"
+                string += f"{att_name}: {class_name} = {class_name}('{att_name}') @ _dollar___offset\n"
                 string += f"{indentation}{indentation}{current_indentation}"
                 string += f"self.{att_name} = {att_name}\n"
             else:
@@ -44,10 +50,12 @@ hexpat definition:
                 string += f"{indentation}{indentation}{current_indentation}"
                 string += f"for i in range(0,{array_length}):\n"
                 string += f"{indentation}{indentation}{current_indentation}{indentation}"
-                string += f"self.{att_name}.append({class_name}(f'{att_name}_{{i}}', _dollar___offset))\n"
+                string += f"self.{att_name}.append({class_name}(f'{att_name}_{{i}}') @ _dollar___offset)\n"
 
     string += f"{indentation}{indentation}"
-    string += "super().__init__(_thisstruct_s_name, _dollar___offset_copy, _dollar___offset.copy())\n"
+    string += "super().init_struct(_dollar___offset_copy, _dollar___offset.copy())\n"
+    string += f"{indentation}{indentation}"
+    string += "return self\n"
     return string
 
 def make_bitfield(name: str, attributes: List[Tuple[str, int]], docstring: str):
@@ -56,65 +64,76 @@ class {name}(BitField):
 {indentation}\"\"\"
 hexpat definition:
 ```hexpat
-{docstring}{indentation}```\"\"\"
-{indentation}def __init__(self, _thisbitfield_s_name: str, _dollar___offset: Dollar):
+{docstring}
+```\"\"\"
+{indentation}def __init__(self, name: str=""):
 {indentation}{indentation}\"\"\"
 {indentation}{indentation}bitfield
 
 {indentation}{indentation}Args:
-{indentation}{indentation}{indentation}_thisbitfield_s_name (str): The name of this instance. Can be whatever you want or just an empty string
-{indentation}{indentation}{indentation}_dollar___offset (Dollar): Dollar pointing to the start of this bitfield
+{indentation}{indentation}{indentation}name (str, optional): The name of this instance. Can be whatever you want or just an empty string. Defaults to "".
 {indentation}{indentation}\"\"\"
 
+{indentation}{indentation}super().__init__(name)
+
+{indentation}def __matmul__(self, _dollar___offset):
+{indentation}{indentation}if not isinstance(_dollar___offset, Dollar):
+{indentation}{indentation}{indentation}raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {{type(_dollar___offset_copy)}} was used instead')
 {indentation}{indentation}_dollar___offset_copy = _dollar___offset.copy()
-{indentation}{indentation}cur_byte = _dollar___offset.read(1)[0]\n"""
+{indentation}{indentation}cur_byte = _dollar___offset.read(1)[0]
+"""
     size = 0
     for name, b_size in attributes:
-        while size >= 8:
-            string += f"{indentation}{indentation}cur_byte = _dollar___offset.read(1)[0]\n"
-            size -= 8
-        string += f"{indentation}{indentation}"
-        prev_size = size
-        size = prev_size + b_size
-        bits_read = 0
-        if size > 8:
-            string += f"self.{name}: int = 0\n"
-            bits_to_read = 0
-            while size >= 8:
-                last_bits_to_read = bits_to_read
-                bits_to_read = 8-prev_size
-                if last_bits_to_read == 8:
-                    string += f"{indentation}{indentation}"
-                    string += f"self.{name} <<= 8\n"
-                elif last_bits_to_read == 0:
-                    string += f"{indentation}{indentation}"
-                    string += f"self.{name} += (cur_byte >> 8-{bits_to_read}) & self._bit_field___masks_dict[{bits_to_read}]\n"
-                else:
-                    string += f"{indentation}{indentation}"
-                    string += f"{name} = (cur_byte >> {prev_size}) & self._bit_field___masks_dict[{b_size}]\n"
-                    string += f"{indentation}{indentation}"
-                    string += f"self.{name} += {name} << {last_bits_to_read}\n"
-                prev_size = 0
-                b_size -= bits_to_read
-                if b_size > 0:
-                    string += f"{indentation}{indentation}"
-                    string += f"cur_byte = _dollar___offset.read(1)[0]\n"
-                size -= 8
-                bits_read += bits_to_read
-            if b_size > 0:
-                if bits_read % 8 == 0:
-                    string += f"{indentation}{indentation}"
-                    string += f"self.{name} += (cur_byte >> {prev_size%8}) & self._bit_field___masks_dict[{b_size}]\n"
-                else:
-                    string += f"{indentation}{indentation}"
-                    string += f"{name} = (cur_byte >> {prev_size%8}) & self._bit_field___masks_dict[{b_size}]\n"
-                    string += f"{indentation}{indentation}"
-                    string += f"self.{name} += {name} << {bits_read%8}\n"
+        if name == plain_text:
+            string += f"{indentation}{indentation}{b_size}\n"
         else:
-            string += f"self.{name}: int = (cur_byte >>{prev_size%8}) & self._bit_field___masks_dict[{b_size}]\n"
+            while size >= 8:
+                string += f"{indentation}{indentation}cur_byte = _dollar___offset.read(1)[0]\n"
+                size -= 8
+            string += f"{indentation}{indentation}"
+            prev_size = size
+            size = prev_size + b_size
+            bits_read = 0
+            if size > 8:
+                string += f"self.{name}: int = 0\n"
+                bits_to_read = 0
+                while size >= 8:
+                    last_bits_to_read = bits_to_read
+                    bits_to_read = 8-prev_size
+                    if last_bits_to_read == 8:
+                        string += f"{indentation}{indentation}"
+                        string += f"self.{name} <<= 8\n"
+                    elif last_bits_to_read == 0:
+                        string += f"{indentation}{indentation}"
+                        string += f"self.{name} += (cur_byte >> 8-{bits_to_read}) & self._bit_field___masks_dict[{bits_to_read}]\n"
+                    else:
+                        string += f"{indentation}{indentation}"
+                        string += f"{name} = (cur_byte >> {prev_size}) & self._bit_field___masks_dict[{b_size}]\n"
+                        string += f"{indentation}{indentation}"
+                        string += f"self.{name} += {name} << {last_bits_to_read}\n"
+                    prev_size = 0
+                    b_size -= bits_to_read
+                    if b_size > 0:
+                        string += f"{indentation}{indentation}"
+                        string += f"cur_byte = _dollar___offset.read(1)[0]\n"
+                    size -= 8
+                    bits_read += bits_to_read
+                if b_size > 0:
+                    if bits_read % 8 == 0:
+                        string += f"{indentation}{indentation}"
+                        string += f"self.{name} += (cur_byte >> {prev_size%8}) & self._bit_field___masks_dict[{b_size}]\n"
+                    else:
+                        string += f"{indentation}{indentation}"
+                        string += f"{name} = (cur_byte >> {prev_size%8}) & self._bit_field___masks_dict[{b_size}]\n"
+                        string += f"{indentation}{indentation}"
+                        string += f"self.{name} += {name} << {bits_read%8}\n"
+            else:
+                string += f"self.{name}: int = (cur_byte >>{prev_size%8}) & self._bit_field___masks_dict[{b_size}]\n"
 
     string += f"{indentation}{indentation}"
-    string += "super().__init__(_thisbitfield_s_name, _dollar___offset_copy, _dollar___offset.copy())\n"
+    string += "super().init_struct(_dollar___offset_copy, _dollar___offset.copy())\n"
+    string += f"{indentation}{indentation}"
+    string += "return self\n"
     return string
 
 def translate_file(input_file_path: str, output_file_path):
@@ -122,7 +141,7 @@ def translate_file(input_file_path: str, output_file_path):
         lines = f.readlines()
 
     padding_count = 0
-    final_string = "from typing import List"
+    final_string = "from typing import List\n"
     final_string += "from primitives import Dollar, Struct, u8, u16, u32, u64, u128, s8, s16, s32, s64, s128, Float, double, char, char16, Bool, Padding, BitField, sizeof, addressof\n\n"
     struct_name = ""
     bitfield_name = ""
@@ -226,8 +245,12 @@ def translate_file(input_file_path: str, output_file_path):
                 line = line.lstrip()
                 line = line.rstrip()
                 line = line.split(";")[0]
-                words = line.split(": ")
-                attribs.append((words[0], int(words[1])))
+                if "//" in line:
+                    line = line.replace("//", "#")
+                    attribs.append((plain_text, line))
+                else:
+                    words = line.split(": ")
+                    attribs.append((words[0], int(words[1])))
 
     with open(output_file_path, "w") as f:
         f.write(final_string)
