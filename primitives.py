@@ -216,11 +216,15 @@ class Struct:
     
     def init_struct(self, starting_offset: Dollar, end_offset: Dollar):
         self.address = starting_offset.offset
+        self.dollar = end_offset
         self.size = end_offset.offset
 
 class IntStruct(Struct):
     def __init__(self, name: str=""):
         super().__init__(name)
+
+    def to_dollar(self) -> Dollar:
+        return Dollar(self.value, self.dollar.byts)
 
     def __repr__(self):
         return self.value.__repr__()
@@ -415,8 +419,10 @@ class UnsignedLe(IntStruct):
         super().__init__(name)
     
     def __matmul__(self, other):
-        if not isinstance(other, Dollar):
+        if not (isinstance(other, Dollar) or isinstance(other, IntStruct)):
             raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {type(other)} was used instead')
+        if isinstance(other, IntStruct):
+            other = other.to_dollar()
         starting_offset = other.copy()
         self.value = le_to_int(other.read(self.length))
         super().init_struct(starting_offset, other.copy())
@@ -430,13 +436,25 @@ class u16(UnsignedLe):
     def __init__(self, value: int=0, name: str=""):
         super().__init__(2, value, name)
 
+class u24(UnsignedLe):
+    def __init__(self, value: int=0, name: str=""):
+        super().__init__(3, value, name)
+
 class u32(UnsignedLe):
     def __init__(self, value: int=0, name: str=""):
         super().__init__(4, value, name)
 
+class u48(UnsignedLe):
+    def __init__(self, value: int=0, name: str=""):
+        super().__init__(6, value, name)
+
 class u64(UnsignedLe):
     def __init__(self, value: int=0, name: str=""):
         super().__init__(8, value, name)
+
+class u96(UnsignedLe):
+    def __init__(self, value: int=0, name: str=""):
+        super().__init__(12, value, name)
 
 class u128(UnsignedLe):
     def __init__(self, value: int=0, name: str=""):
@@ -449,8 +467,10 @@ class SignedLe(IntStruct):
         super().__init__(name)
 
     def __matmul__(self, other):
-        if not isinstance(other, Dollar):
+        if not (isinstance(other, Dollar) or isinstance(other, IntStruct)):
             raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {type(other)} was used instead')
+        if isinstance(other, IntStruct):
+            other = other.to_dollar()
         starting_offset = other.copy()
         self.value = le_to_int(other.read(self.length))
         
@@ -473,13 +493,25 @@ class s16(SignedLe):
     def __init__(self, value: int=0, name: str=""):
         super().__init__(2, value, name)
 
+class s24(SignedLe):
+    def __init__(self, value: int=0, name: str=""):
+        super().__init__(3, value, name)
+
 class s32(SignedLe):
     def __init__(self, value: int=0, name: str=""):
         super().__init__(4, value, name)
 
+class s48(SignedLe):
+    def __init__(self, value: int=0, name: str=""):
+        super().__init__(6, value, name)
+
 class s64(SignedLe):
     def __init__(self, value: int=0, name: str=""):
         super().__init__(8, value, name)
+
+class s96(SignedLe):
+    def __init__(self, value: int=0, name: str=""):
+        super().__init__(12, value, name)
 
 class s128(SignedLe):
     def __init__(self, value: int=0, name: str=""):
@@ -492,8 +524,10 @@ class RealNum(Struct):
         super().__init__(name)
     
     def __matmul__(self, other):
-        if not isinstance(other, Dollar):
+        if not (isinstance(other, Dollar) or isinstance(other, IntStruct)):
             raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {type(other)} was used instead')
+        if isinstance(other, IntStruct):
+            other = other.to_dollar()
         starting_offset = other.copy()
         self.value = other.read(self.length)
         if self.length == 4:
@@ -528,8 +562,10 @@ class Character(Struct):
         super().__init__(name)
     
     def __matmul__(self, other):
-        if not isinstance(other, Dollar):
+        if not (isinstance(other, Dollar) or isinstance(other, IntStruct)):
             raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {type(other)} was used instead')
+        if isinstance(other, IntStruct):
+            other = other.to_dollar()
         starting_offset = other.copy()
         self.value = other.read(self.length)
         self.value = "".join(map(chr, self.value))
@@ -561,8 +597,10 @@ class Bool(Struct):
         super().__init__(name)
     
     def __matmul__(self, other):
-        if not isinstance(other, Dollar):
+        if not (isinstance(other, Dollar) or isinstance(other, IntStruct)):
             raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {type(other)} was used instead')
+        if isinstance(other, IntStruct):
+            other = other.to_dollar()
         starting_offset = other.copy()
         self.value = le_to_int(other.read(1))
         if self.false_range == range(0x00,0x01):
@@ -595,8 +633,10 @@ class Padding(Struct):
         super().__init__(name)
     
     def __matmul__(self, other):
-        if not isinstance(other, Dollar):
+        if not (isinstance(other, Dollar) or isinstance(other, IntStruct)):
             raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {type(other)} was used instead')
+        if isinstance(other, IntStruct):
+            other = other.to_dollar()
         starting_offset = other.copy()
         self.value = other.read(self.length)
         super().init_struct(starting_offset, other.copy())
