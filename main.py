@@ -2,9 +2,8 @@ from typing import List, Tuple
 import primitives
 
 plain_text = "PlainText_thisisalongnameonpurposesonobodywoulduseitonaccident"
-indentation = "    "
 
-def make_struct(name: str, attributes: List[Tuple[str, str, int, int]], docstring: str):
+def make_struct(name: str, attributes: List[Tuple[str, str, int, int]], docstring: str, indentation):
     string = f"""\
 class {name}(Struct):
 {indentation}\"\"\"
@@ -58,7 +57,7 @@ hexpat definition:
     string += "return self\n"
     return string
 
-def make_bitfield(name: str, attributes: List[Tuple[str, int]], docstring: str):
+def make_bitfield(name: str, attributes: List[Tuple[str, int]], docstring: str, indentation):
     string = f"""\
 class {name}(BitField):
 {indentation}\"\"\"
@@ -136,13 +135,13 @@ hexpat definition:
     string += "return self\n"
     return string
 
-def translate_file(input_file_path: str, output_file_path):
+def translate_file(input_file_path: str, output_file_path, indentation="    "):
     with open(input_file_path, "r") as f:
         lines = f.readlines()
 
     padding_count = 0
     final_string = "from typing import List\n"
-    final_string += "from primitives import Dollar, Struct, u8, u16, u32, u64, u128, s8, s16, s32, s64, s128, Float, double, char, char16, Bool, Padding, BitField, sizeof, addressof\n\n"
+    final_string += "from primitives import Dollar, Struct, u8, u16, u24, u32, u48, u64, u96, u128, s8, s16, s24, s32, s48, s64, s96, s128, Float, double, char, char16, Bool, Padding, BitField, sizeof, addressof\n\n"
     struct_name = ""
     bitfield_name = ""
     docstring = ""
@@ -177,7 +176,7 @@ def translate_file(input_file_path: str, output_file_path):
         elif struct_name != "":
             docstring += line
             if line[0] == "}":
-                final_string += make_struct(struct_name, attribs, docstring)
+                final_string += make_struct(struct_name, attribs, docstring, indentation)
                 attribs = []
                 current_attribs = []
                 struct_name = ""
@@ -236,7 +235,7 @@ def translate_file(input_file_path: str, output_file_path):
         elif bitfield_name != "":
             docstring += line
             if line[0] == "}":
-                final_string += make_bitfield(bitfield_name, attribs, docstring)
+                final_string += make_bitfield(bitfield_name, attribs, docstring, indentation)
                 attribs = []
                 current_attribs = []
                 bitfield_name = ""
