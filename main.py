@@ -1,5 +1,19 @@
+import os
+import sys
 from typing import List, Tuple
 import primitives
+
+macos = "MacOs"
+other = "Other"
+if sys.platform.startswith("win32"):
+    include_path = os.path.expandvars("%localappdata%/imhex/includes/")
+    include_path2 = os.path.expandvars("%programfiles%/imhex/includes/")
+elif sys.platform.startswith("darwin"):
+    include_path = macos
+    include_path2 = macos
+else:
+    include_path = other
+    include_path2 = other
 
 plain_text = "PlainText_thisisalongnameonpurposesonobodywoulduseitonaccident"
 
@@ -135,43 +149,147 @@ hexpat definition:
     string += "return self\n"
     return string
 
-def translate_file(input_file_path: str, output_file_path, indentation="    "):
-    with open(input_file_path, "r") as f:
+def get_path(rel_path: str, extra_paths: List[str]):
+    if include_path == macos and include_path2 == macos and len(extra_paths) == 0:
+        raise Exception("""
+That script contains an "#include<...>".
+Hexpyt doesn't know where MacOs's imhex include path is.
+You can fix it in 2 ways.
+1. Add the path to the "extra_paths" argument of translate_file
+2. Change lines 12-13 of main.py from "include_path = macos" to "include_path = '<The include path goes here>'"
+""")
+    elif include_path == other and include_path2 == other and len(extra_paths) == 0:
+        raise Exception("""
+That script contains an "#include<...>".
+Hexpyt doesn't know where MacOs's imhex include path is.
+You can fix it in 2 ways.
+1. Add the path to the "extra_paths" argument of translate_file
+2. Change lines 15-16 of main.py from "include_path = macos" to "include_path = '<The include path goes here>'"
+""")
+    extra_paths.append(include_path)
+    extra_paths.append(include_path2)
+    found = False
+    for e_path in extra_paths:
+        path = e_path+rel_path
+        file = path.split("/")[-1]
+        folder = "/".join(path.split("/")[:-1])
+        try:
+            if file not in os.listdir(folder):
+                continue
+            else:
+                found = True
+                break
+        except FileNotFoundError:
+            continue
+    if not found:
+        raise Exception(f"""
+{rel_path} not found.
+Paths searched:
+    * {include_path}
+    * {include_path2}
+""")
+
+    return path
+
+def get_symbols(rel_path, extra_paths: List[str]):
+    path = get_path(rel_path, extra_paths)
+    with open(path, "r") as f:
         lines = f.readlines()
 
-    padding_count = 0
-    final_string = "from typing import List\n"
-    final_string += "from primitives import Dollar, Struct, u8, u16, u24, u32, u48, u64, u96, u128, s8, s16, s24, s32, s48, s64, s96, s128, Float, double, char, char16, Bool, Padding, BitField, sizeof, addressof\n\n"
+    new_symbols = []
     struct_name = ""
     bitfield_name = ""
-    docstring = ""
-    type_names = primitives.struct_names
-    current_attribs = []
-    attribs = []
-    indentation_count = 0
     for line in lines:
         if struct_name == "" and bitfield_name == "":
             words = line.split(" ")
             if words[0] == "struct":
-                docstring = line
-                final_string += "\n"
                 struct_name = list(words[1])
                 if struct_name[-1] == "\n":
                     struct_name = struct_name[:-1]
                 if struct_name[-1] == "{":
                     struct_name = struct_name[:-1]
                 struct_name = "".join(struct_name)
-                type_names.append(struct_name)
+                new_symbols.append(struct_name)
             elif words[0] == "bitfield":
-                docstring = line
-                final_string += "\n"
                 bitfield_name = list(words[1])
                 if bitfield_name[-1] == "\n":
                     bitfield_name = bitfield_name[:-1]
                 if bitfield_name[-1] == "{":
                     bitfield_name = bitfield_name[:-1]
                 bitfield_name = "".join(bitfield_name)
-                type_names.append(bitfield_name)
+                new_symbols.append(bitfield_name)
+
+        elif struct_name != "":
+            if line[0] == "}":
+                struct_name = ""
+
+        elif bitfield_name != "":
+            if line[0] == "}":
+                bitfield_name = ""
+
+    return new_symbols
+
+def translate_file(input_file_path: str, output_file_path: str, indentation: str="    ", extra_paths: List[str]=[]):
+    with open(input_file_path, "r") as f:
+        lines = f.readlines()
+
+    padding_count = 0
+    final_string = "from typing import List\n"
+    final_string += "from primitives import Dollar, Struct, BitField, "
+    final_string += "u8, u16, u24, u32, u48, u64, u96, u128, "
+    final_string += "s8, s16, s24, s32, s48, s64, s96, s128, "
+    final_string += "Float, double, char, char16, Bool, "
+    final_string += "Padding, sizeof, addressof\n\n"
+    struct_name = ""
+    bitfield_name = ""
+    function_name = ""
+    docstring = ""
+    type_names = primitives.struct_names
+    current_attribs = []
+    attribs = []
+    indentation_count = 0
+    opening_brackets = 0
+    for line in lines:
+        if struct_name == "" and bitfield_name == "" and function_name == "":
+            if line.startswith("#include"):
+                if '"' in line:
+                    path = line.split('"')[1]
+                elif "<" in line:
+                    path = line.split("<")[1].split(">")[0]
+                else:
+                    raise Exception("Error while parsing #include")
+                type_names.extend(get_symbols(path, extra_paths))
+            else:
+                words = line.split(" ")
+                if words[0] == "struct":
+                    docstring = line
+                    final_string += "\n"
+                    struct_name = list(words[1])
+                    if struct_name[-1] == "\n":
+                        struct_name = struct_name[:-1]
+                    if struct_name[-1] == "{":
+                        struct_name = struct_name[:-1]
+                    struct_name = "".join(struct_name)
+                    type_names.append(struct_name)
+                elif words[0] == "bitfield":
+                    docstring = line
+                    final_string += "\n"
+                    bitfield_name = list(words[1])
+                    if bitfield_name[-1] == "\n":
+                        bitfield_name = bitfield_name[:-1]
+                    if bitfield_name[-1] == "{":
+                        bitfield_name = bitfield_name[:-1]
+                    bitfield_name = "".join(bitfield_name)
+                    type_names.append(bitfield_name)
+                elif words[0] == "fn":
+                    function_name == ""
+                    function_name = list(words[1])
+                    if function_name[-1] == "\n":
+                        function_name = function_name[:-1]
+                    if function_name[-1] == "{":
+                        function_name = function_name[:-1]
+                    function_name = "".join(function_name)
+                    opening_brackets = 1
 
         elif struct_name != "":
             docstring += line
@@ -250,6 +368,19 @@ def translate_file(input_file_path: str, output_file_path, indentation="    "):
                 else:
                     words = line.split(": ")
                     attribs.append((words[0], int(words[1])))
+
+        elif function_name != "":
+            for char in line:
+                if char == "{":
+                    opening_brackets += 1
+                elif char == "}":
+                    opening_brackets -= 1
+            
+            if opening_brackets == 0:
+                function_name = ""
+        
+        else:
+            final_string += line
 
     with open(output_file_path, "w") as f:
         f.write(final_string)
