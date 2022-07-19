@@ -36,8 +36,10 @@ hexpat definition:
 {indentation}{indentation}super().__init__(name)
 
 {indentation}def __matmul__(self, _dollar___offset):
-{indentation}{indentation}if not isinstance(_dollar___offset, Dollar):
+{indentation}{indentation}if not (isinstance(_dollar___offset, Dollar) or isinstance(_dollar___offset, IntStruct)):
 {indentation}{indentation}{indentation}raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {{type(_dollar___offset)}} was used instead')
+{indentation}{indentation}if isinstance(_dollar___offset, IntStruct):
+{indentation}{indentation}{indentation}_dollar___offset = _dollar___offset.to_dollar()
 {indentation}{indentation}_dollar___offset_copy = _dollar___offset.copy()
 """
     for (class_name, att_name, array_length, indentation_count) in attributes:
@@ -95,8 +97,10 @@ hexpat definition:
 {indentation}{indentation}super().__init__(name)
 
 {indentation}def __matmul__(self, _dollar___offset):
-{indentation}{indentation}if not isinstance(_dollar___offset, Dollar):
+{indentation}{indentation}if not (isinstance(_dollar___offset, Dollar) or isinstance(_dollar___offset, IntStruct)):
 {indentation}{indentation}{indentation}raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {{type(_dollar___offset)}} was used instead')
+{indentation}{indentation}if isinstance(_dollar___offset, IntStruct):
+{indentation}{indentation}{indentation}_dollar___offset = _dollar___offset.to_dollar()
 {indentation}{indentation}_dollar___offset_copy = _dollar___offset.copy()
 {indentation}{indentation}cur_byte = _dollar___offset.read(1)[0]
 """
