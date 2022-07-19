@@ -312,7 +312,19 @@ def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List
     final_string += "u8, u16, u24, u32, u48, u64, u96, u128, "
     final_string += "s8, s16, s24, s32, s48, s64, s96, s128, "
     final_string += "Float, double, char, char16, Bool, "
-    final_string += "Padding, Array, sizeof, addressof\n\n"
+    final_string += "Padding, Array, sizeof, addressof\n"
+    final_string += """
+# Template to read from a file. follow the instructions.
+# _dollar___offset has this name so it doesn't clash with others. Feel free to rename it. 
+if True: # Change this from "if True" to "if False", then put the file path below.
+    byts = b''
+else:
+    file_path = "" # Put the file path here and change the above "if True" to "if False".
+    with open(file_path, "rb") as f:
+        byts = f.read()
+_dollar___offset = Dollar(0x00, byts)
+# End of template
+"""
     struct_name = ""
     bitfield_name = ""
     function_name = ""
@@ -322,9 +334,13 @@ def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List
     attribs = []
     indentation_count = 0
     opening_brackets = 0
+    defines = [("std::print", "print"), ("$", "_dollar___offset"), ("//", "#"), ("else if", "elif"), ("::", ".")]
     for line in lines:
+        for (const, replacement) in defines:
+            line = line.replace(const, replacement)
         if struct_name == "" and bitfield_name == "" and function_name == "":
             if line.startswith("#include"):
+                orig_line = line
                 if '"' in line:
                     path = line.split('"')[1]
                 elif "<" in line:
@@ -334,7 +350,15 @@ def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List
                 type_names.extend(get_symbols(path, extra_paths))
                 path = path.replace(".pat", "")
                 path = path.replace(".hexpat", "")
+                final_string += orig_line
                 final_string += f"from {path.replace('/', '.')} import *\n\n"
+            elif line.startswith("#define"):
+                orig_line = line
+                words = line.split(" ")
+                const = words[1]
+                replacement = " ".join(words[2:])
+                defines.append((const, replacement))
+                final_string += orig_line
             else:
                 words = line.lstrip().split(" ")
                 if words[0] == "struct":
