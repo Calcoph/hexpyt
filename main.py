@@ -339,6 +339,7 @@ _dollar___offset = Dollar(0x00, byts)
     opening_brackets = 0
     defines = [("std::print", "print"), ("$", "_dollar___offset"), ("//", "#"), ("else if", "elif"), ("::", ".")]
     for line in lines:
+        old_line = line
         for (const, replacement) in defines:
             line = line.replace(const, replacement)
         if struct_name == "" and bitfield_name == "" and function_name == "":
@@ -365,7 +366,7 @@ _dollar___offset = Dollar(0x00, byts)
             else:
                 words = line.lstrip().split(" ")
                 if words[0] == "struct":
-                    docstring = line
+                    docstring = old_line
                     final_string += "\n"
                     struct_name = list(words[1])
                     if struct_name[-1] == "\n":
@@ -375,7 +376,7 @@ _dollar___offset = Dollar(0x00, byts)
                     struct_name = "".join(struct_name)
                     type_names.append(struct_name)
                 elif words[0] == "bitfield":
-                    docstring = line
+                    docstring = old_line
                     final_string += "\n"
                     bitfield_name = list(words[1])
                     if bitfield_name[-1] == "\n":
@@ -411,7 +412,7 @@ _dollar___offset = Dollar(0x00, byts)
                     final_string += line
 
         elif struct_name != "":
-            docstring += line
+            docstring += old_line
             if line[0] == "}":
                 final_string += make_struct(struct_name, attribs, docstring, indentation)
                 attribs = []
@@ -470,7 +471,7 @@ _dollar___offset = Dollar(0x00, byts)
                                 ))
 
         elif bitfield_name != "":
-            docstring += line
+            docstring += old_line
             if line.lstrip()[0] == "}":
                 final_string += make_bitfield(bitfield_name, attribs, docstring, indentation)
                 attribs = []
