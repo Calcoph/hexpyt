@@ -2,8 +2,8 @@ import struct
 from typing import TypeVar, List
 
 struct_names = [
-    "u8", "u16", "u32", "u64", "u128",
-    "s8", "s16", "s32", "s64", "s128",
+    "u8", "u16", "u24", "u32", "u48", "u64", "u96", "u128",
+    "s8", "s16", "s24", "s32", "s48", "s64", "s96", "s128",
     "float", "double",
     "char", "char16",
     "bool"
