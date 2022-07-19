@@ -404,7 +404,7 @@ _dollar___offset = Dollar(0x00, byts)
                         words = line[0].split(" ")
                         type_name = words[0]
                         new_var = words[1]
-                        line = f"{new_var}: {type_name} = {type_name}() @ {''.join(line[1:]).lstrip()}"
+                        line = f"{new_var}: {type_name} = {type_name}() @ ({''.join(line[1:]).lstrip()})"
                     for _ in range(0, cur_indent):
                         line = indentation + line
                     final_string += line

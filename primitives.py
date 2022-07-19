@@ -1,3 +1,4 @@
+from __future__ import annotations
 import struct
 from typing import TypeVar, List
 
@@ -222,103 +223,146 @@ class Struct:
 
 class IntStruct(Struct):
     def __init__(self, name: str=""):
+        self.value: int
         super().__init__(name)
 
     def to_dollar(self) -> Dollar:
         return Dollar(self.value, self.dollar.byts)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.value.__repr__()
     
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value.__str__()
 
-    def __format__(self, format_spec):
+    def __format__(self, format_spec) -> str:
         return self.value.__format__(format_spec)
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         return self.value.__lt__(other)
 
-    def __le__(self, other):
+    def __le__(self, other) -> bool:
         return self.value.__le__(other)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return self.value.__eq__(other)
 
-    def __ne__(self, other):
+    def __ne__(self, other) -> bool:
         return self.value.__ne__(other)
 
-    def __gt__(self, other):
+    def __gt__(self, other) -> bool:
         return self.value.__gt__(other)
 
-    def __ge__(self, other):
+    def __ge__(self, other) -> bool:
         return self.value.__ge__(other)
     
     def __hash__(self) -> int:
         return self.value.__hash__()
     
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return self.value.__bool__()
     
-    def __len__(self):
-        return self.value.__len__()
-    
-    def __length_hint__(self):
-        return self.value.__length_hint__()
-    
-    def __add__(self, other):
-        return self.value.__add__(other)
+    def __add__(self, other) -> IntStruct:
+        result = self.value.__add__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
-    def __sub__(self, other):
-        return self.value.__sub__(other)
+    def __sub__(self, other) -> IntStruct:
+        result = self.value.__sub__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
-    def __mul__(self, other):
-        return self.value.__mul__(other)
+    def __mul__(self, other) -> IntStruct:
+        result = self.value.__mul__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
     def __truediv__(self, other):
         return self.value.__truediv__(other)
 
-    def __floordiv__(self, other):
-        return self.value.__floordiv__(other)
+    def __floordiv__(self, other) -> IntStruct:
+        result = self.value.__floordiv__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
-    def __mod__(self, other):
-        return self.value.__mod__(other)
+    def __mod__(self, other) -> IntStruct:
+        result = self.value.__mod__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
     def __divmod__(self, other):
         return self.value.__divmod__(other)
 
-    def __pow__(self, other):
-        return self.value.__pow__(other)
+    def __pow__(self, other) -> IntStruct:
+        result = self.value.__pow__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
-    def __lshift__(self, other):
-        return self.value.__lshift__(other)
+    def __lshift__(self, other) -> IntStruct:
+        result = self.value.__lshift__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
-    def __rshift__(self, other):
-        return self.value.__rshift__(other)
+    def __rshift__(self, other) -> IntStruct:
+        result = self.value.__rshift__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
     
-    def __and__(self, other):
-        return self.value.__and__(other)
+    def __and__(self, other) -> IntStruct:
+        result = self.value.__and__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
-    def __xor__(self, other):
-        return self.value.__xor__(other)
+    def __xor__(self, other) -> IntStruct:
+        result = self.value.__xor__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
-    def __radd__(self, other):
-        return self.value.__radd__(other)
+    def __radd__(self, other) -> IntStruct:
+        result = self.value.__radd__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
-    def __rsub__(self, other):
-        return self.value.__rsub__(other)
+    def __rsub__(self, other) -> IntStruct:
+        result = self.value.__rsub__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
-    def __rmul__(self, other):
-        return self.value.__rmul__(other)
+    def __rmul__(self, other) -> IntStruct:
+        result = self.value.__rmul__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
-    def __rtruediv__(self, other):
-        return self.value.__rtruediv__(other)
+    def __rtruediv__(self, other) -> IntStruct:
+        result = self.value.__rtruediv__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
-    def __rfloordiv__(self, other):
-        return self.value.__rfloordiv__(other)
+    def __rfloordiv__(self, other) -> IntStruct:
+        result = self.value.__rfloordiv__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
-    def __rmod__(self, other):
-        return self.value.__rmod__(other)
+    def __rmod__(self, other) -> IntStruct:
+        result = self.value.__rmod__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
     def __rdivmod__(self, other):
         return self.value.__rdivmod__(other)
@@ -326,20 +370,35 @@ class IntStruct(Struct):
     def __rpow__(self, other):
         return self.value.__rpow__(other)
 
-    def __rlshift__(self, other):
-        return self.value.__rlshift__(other)
+    def __rlshift__(self, other) -> IntStruct:
+        result = self.value.__rlshift__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
-    def __rrshift__(self, other):
-        return self.value.__rrshift__(other)
+    def __rrshift__(self, other) -> IntStruct:
+        result = self.value.__rrshift__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
-    def __rand__(self, other):
-        return self.value.__rand__(other)
+    def __rand__(self, other) -> IntStruct:
+        result = self.value.__rand__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
-    def __rxor__(self, other):
-        return self.value.__rxor__(other)
+    def __rxor__(self, other) -> IntStruct:
+        result = self.value.__rxor__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
-    def __ror__(self, other):
-        return self.value.__ror__(other)
+    def __ror__(self, other) -> IntStruct:
+        result = self.value.__ror__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
     def __iadd__(self, other):
         return self.value.__iadd__(other)
@@ -377,17 +436,29 @@ class IntStruct(Struct):
     def __ior__(self, other):
         return self.value.__ior__(other)
 
-    def __neg__(self, other):
-        return self.value.__neg__(other)
+    def __neg__(self, other) -> IntStruct:
+        result = self.value.__neg__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
-    def __pos__(self, other):
-        return self.value.__pos__(other)
+    def __pos__(self, other) -> IntStruct:
+        result = self.value.__pos__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
-    def __abs__(self, other):
-        return self.value.__abs__(other)
+    def __abs__(self, other) -> IntStruct:
+        result = self.value.__abs__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
 
-    def __invert__(self, other):
-        return self.value.__invert__(other)
+    def __invert__(self, other) -> IntStruct:
+        result = self.value.__invert__(other)
+        result = type(self)(result)
+        result.dollar = self.dollar.copy()
+        return result
     
     def __complex__(self):
         return self.value.__complex__()
@@ -398,16 +469,16 @@ class IntStruct(Struct):
     def __float__(self):
         return self.value.__float__()
 
-    def __round__(self):
+    def __round__(self) -> IntStruct:
         return self.value.__round__()
 
-    def __trunc__(self):
+    def __trunc__(self) -> IntStruct:
         return self.value.__trunc__()
 
     def __floord__(self):
         return self.value.__floord__()
 
-    def __ceil__(self):
+    def __ceil__(self) -> IntStruct:
         return self.value.__ceil__()
     
     def __index__(self):
