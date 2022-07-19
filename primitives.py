@@ -144,40 +144,40 @@ class Dollar:
         return self.offset.__ror__(other)
 
     def __iadd__(self, other):
-        return self.offset.__iadd__(other)
+        self.offset += other
 
     def __isub__(self, other):
-        return self.offset.__isub__(other)
+        self.offset -= other
 
     def __imul__(self, other):
-        return self.offset.__imul__(other)
+        self.offset += other
 
     def __itruediv__(self, other):
-        return self.offset.__itruediv__(other)
+        self.offset /= other
 
     def __ifloordiv__(self, other):
-        return self.offset.__ifloordiv__(other)
+        self.offset //= other
 
     def __imod__(self, other):
-        return self.offset.__imod__(other)
+        self.offset %= other
 
     def __ipow__(self, other):
-        return self.offset.__ipow__(other)
+        self.offset **= other
 
     def __ilshift__(self, other):
-        return self.offset.__ilshift__(other)
+        self.offset <<= other
 
     def __irshift__(self, other):
-        return self.offset.__irshift__(other)
+        self.offset >>= other
 
     def __iand__(self, other):
-        return self.offset.__iand__(other)
+        self.offset &= other
 
     def __ixor__(self, other):
-        return self.offset.__ixor__(other)
+        self.offset ^= other
 
     def __ior__(self, other):
-        return self.offset.__ior__(other)
+        self.offset |= other
 
     def __neg__(self, other):
         return self.offset.__neg__(other)
@@ -401,40 +401,40 @@ class IntStruct(Struct):
         return result
 
     def __iadd__(self, other):
-        return self.value.__iadd__(other)
+        self.value += other
 
     def __isub__(self, other):
-        return self.value.__isub__(other)
+        self.value -= other
 
     def __imul__(self, other):
-        return self.value.__imul__(other)
+        self.value *= other
 
     def __itruediv__(self, other):
-        return self.value.__itruediv__(other)
+        self.value /= other
 
     def __ifloordiv__(self, other):
-        return self.value.__ifloordiv__(other)
+        self.value //= other
 
     def __imod__(self, other):
-        return self.value.__imod__(other)
+        self.value %= other
 
     def __ipow__(self, other):
-        return self.value.__ipow__(other)
+        self.value **= other
 
     def __ilshift__(self, other):
-        return self.value.__ilshift__(other)
+        self.value <<= other
 
     def __irshift__(self, other):
-        return self.value.__irshift__(other)
+        self.value >>= other
 
     def __iand__(self, other):
-        return self.value.__iand__(other)
+        self.value &= other
 
     def __ixor__(self, other):
-        return self.value.__ixor__(other)
+        self.value ^= other
 
     def __ior__(self, other):
-        return self.value.__ior__(other)
+        self.value |= other
 
     def __neg__(self, other) -> IntStruct:
         result = self.value.__neg__(other)
