@@ -311,7 +311,7 @@ def remove_namespaces(lines: List[str]) -> List[str]:
 def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List[str]=[]) -> str:
     lines = remove_namespaces(lines)
     padding_count = 0
-    final_string = "from primitives import Dollar, Struct, BitField, IntStruct"
+    final_string = "from primitives import Dollar, Struct, BitField, IntStruct, "
     final_string += "u8, u16, u24, u32, u48, u64, u96, u128, "
     final_string += "s8, s16, s24, s32, s48, s64, s96, s128, "
     final_string += "Float, double, char, char16, Bool, "
