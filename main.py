@@ -238,7 +238,70 @@ def get_symbols(rel_path, extra_paths: List[str]):
 
     return new_symbols
 
+def remove_namespaces(lines: List[str]) -> List[str]:
+    final_lines = []
+    namespace_lines = []
+    in_namespace = False
+    opening_brackets = None
+    indentation_length = None
+    for line in lines:
+        if "namespace" in line:
+            in_namespace = True
+            if "{" in line:
+                opening_brackets = 1
+            else:
+                opening_brackets = None
+        else:
+            if in_namespace:
+                if "}" in line:
+                    opening_brackets -= 1
+                    if opening_brackets == 0:
+                        line = line.replace("}", "")
+                        if len(line) > indentation_length:
+                            namespace_lines.append(line[indentation_length:])
+                        else:
+                            namespace_lines.append(line)
+                        in_namespace = False
+                        opening_brackets = None
+                        indentation_length = None
+                        final_lines.extend(remove_namespaces(namespace_lines))
+                        namespace_lines = []
+                    else:
+                        if len(line) > indentation_length:
+                            namespace_lines.append(line[indentation_length:])
+                        else:
+                            namespace_lines.append(line)
+                else:
+                    if opening_brackets is None:
+                        if "{" in line:
+                            opening_brackets = 0
+                    if opening_brackets is None:
+                        continue
+                    if "{" in line:
+                        opening_brackets += 1
+                    if indentation_length is None:
+                        i = 0
+                        found = False
+                        while line[i] != "\n" and not found:
+                            if line[i] != " " and line[i] != "\t":
+                                found = True
+                            else:
+                                i += 1
+                        if found:
+                            indentation_length = i
+                    if indentation_length is None:
+                        continue
+                    if len(line) > indentation_length:
+                        namespace_lines.append(line[indentation_length:])
+                    else:
+                        namespace_lines.append(line)
+            else:
+                final_lines.append(line)
+
+    return final_lines
+
 def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List[str]=[]) -> str:
+    lines = remove_namespaces(lines)
     padding_count = 0
     final_string = "from typing import List\n"
     final_string += "from primitives import Dollar, Struct, BitField, "
@@ -265,9 +328,11 @@ def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List
                 else:
                     raise Exception("Error while parsing #include")
                 type_names.extend(get_symbols(path, extra_paths))
+                path = path.replace(".pat", "")
+                path = path.replace(".hexpat", "")
                 final_string += f"from {path.replace('/', '.')} import *\n\n"
             else:
-                words = line.split(" ")
+                words = line.lstrip().split(" ")
                 if words[0] == "struct":
                     docstring = line
                     final_string += "\n"
@@ -290,13 +355,9 @@ def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List
                     type_names.append(bitfield_name)
                 elif words[0] == "fn":
                     function_name == ""
-                    function_name = list(words[1])
-                    if function_name[-1] == "\n":
-                        function_name = function_name[:-1]
-                    if function_name[-1] == "{":
-                        function_name = function_name[:-1]
-                    function_name = "".join(function_name)
+                    function_name = words[1].split("(")[0].rstrip()
                     opening_brackets = 1
+                    print(function_name)
                 else:
                     if "}" in line:
                         indentation_count -= 1
@@ -310,6 +371,7 @@ def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List
                     line = line.lstrip()
                     line = line.replace("//", "#")
                     line = line.replace("else if", "elif")
+                    line = line.replace("::", ".")
                     if "@" in line:
                         line = line.split("@")
                         words = line[0].split(" ")
@@ -375,6 +437,7 @@ def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List
                     line = line.lstrip()
                     line = line.replace("//", "#")
                     line = line.replace("else if", "elif")
+                    line = line.replace("::", ".")
                     attribs.append((plain_text,
                                     line,
                                     0,
@@ -383,7 +446,7 @@ def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List
 
         elif bitfield_name != "":
             docstring += line
-            if line[0] == "}":
+            if line.lstrip()[0] == "}":
                 final_string += make_bitfield(bitfield_name, attribs, docstring, indentation)
                 attribs = []
                 current_attribs = []
