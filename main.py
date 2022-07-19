@@ -157,15 +157,23 @@ That script contains an "#include<...>".
 Hexpyt doesn't know where MacOs's imhex include path is.
 You can fix it in 2 ways.
 1. Add the path to the "extra_paths" argument of translate_file
-2. Change lines 12-13 of main.py from "include_path = macos" to "include_path = '<The include path goes here>'"
+2. Change lines 12-13 of main.py
+    from
+        "include_path = macos"
+    to
+        "include_path = '<The include path goes here>'"
 """)
     elif include_path == other and include_path2 == other and len(extra_paths) == 0:
         raise Exception("""
 That script contains an "#include<...>".
-Hexpyt doesn't know where MacOs's imhex include path is.
+Hexpyt doesn't know where your OS's imhex include path is.
 You can fix it in 2 ways.
 1. Add the path to the "extra_paths" argument of translate_file
-2. Change lines 15-16 of main.py from "include_path = macos" to "include_path = '<The include path goes here>'"
+2. Change lines 15-16 of main.py
+    from
+        "include_path = other"
+    to
+        "include_path = '<The include path goes here>'"
 """)
     extra_paths.append(include_path)
     extra_paths.append(include_path2)
