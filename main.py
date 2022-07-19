@@ -396,15 +396,13 @@ _dollar___offset = Dollar(0x00, byts)
                         line = line.replace(" {", ":")
                         line = line.replace("{", ":")
                     line = line.lstrip()
-                    line = line.replace("//", "#")
-                    line = line.replace("else if", "elif")
-                    line = line.replace("::", ".")
                     if "@" in line:
                         line = line.split("@")
                         words = line[0].split(" ")
                         type_name = words[0]
                         new_var = words[1]
-                        line = f"{new_var}: {type_name} = {type_name}() @ ({''.join(line[1:]).lstrip()})"
+                        expression = ''.join(line[1:]).lstrip().rstrip().replace(";", "")
+                        line = f"{new_var}: {type_name} = {type_name}() @ ({expression})\n"
                     for _ in range(0, cur_indent):
                         line = indentation + line
                     final_string += line
@@ -462,9 +460,6 @@ _dollar___offset = Dollar(0x00, byts)
                         line = line.replace(" {", ":")
                         line = line.replace("{", ":")
                     line = line.lstrip()
-                    line = line.replace("//", "#")
-                    line = line.replace("else if", "elif")
-                    line = line.replace("::", ".")
                     attribs.append((plain_text,
                                     line,
                                     0,
