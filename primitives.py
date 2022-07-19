@@ -1,4 +1,5 @@
 import struct
+from typing import TypeVar, List
 
 struct_names = [
     "u8", "u16", "u32", "u64", "u128",
@@ -217,7 +218,7 @@ class Struct:
     def init_struct(self, starting_offset: Dollar, end_offset: Dollar):
         self.address = starting_offset.offset
         self.dollar = end_offset
-        self.size = end_offset.offset
+        self.size = end_offset.offset - self.address
 
 class IntStruct(Struct):
     def __init__(self, name: str=""):
@@ -664,6 +665,24 @@ class BitField(Struct):
     }
     def __init__(self, name: str=""):
         super().__init__(name)
+
+T = TypeVar('T', bound=Struct)
+class Array(List[T], Struct):
+    def __init__(self, type_: T, length: int) -> None:
+        self.type_ = type_
+        self.length = length
+        list.__init__(self)
+    
+    def __matmul__(self, other):
+        if not (isinstance(other, Dollar) or isinstance(other, IntStruct)):
+            raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {type(other)} was used instead')
+        if isinstance(other, IntStruct):
+            other = other.to_dollar()
+        self.clear()
+        for _ in range(0, self.length):
+            self.append(self.type_() @ other)
+        return self
+
 
 def sizeof(struct: Struct) -> int:
     return struct.size

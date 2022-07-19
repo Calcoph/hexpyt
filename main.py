@@ -53,20 +53,24 @@ hexpat definition:
         if class_name == "Padding":
             string += f"self.{att_name}: {class_name} = {class_name}({array_length}, '{att_name}') @ _dollar___offset\n"
         elif class_name == plain_text:
-            string += att_name
+            if len(att_name) > 0:
+                if att_name[-1] != "\n":
+                    att_name = att_name + "\n"
+                string += att_name
+            else:
+                indent_len = len(f"{indentation}{indentation}{current_indentation}")
+                string = string[:-indent_len]
         else:
             if array_length == 0:
                 string += f"{att_name}: {class_name} = {class_name}('{att_name}') @ _dollar___offset\n"
                 string += f"{indentation}{indentation}{current_indentation}"
                 string += f"self.{att_name} = {att_name}\n"
             else:
-                string += f"self.{att_name}: List[{class_name}] = []\n"
+                string += f"{att_name}: Array[{class_name}] = Array({class_name}, {array_length}) @ _dollar___offset\n"
                 string += f"{indentation}{indentation}{current_indentation}"
-                string += f"for i in range(0,{array_length}):\n"
-                string += f"{indentation}{indentation}{current_indentation}{indentation}"
-                string += f"self.{att_name}.append({class_name}(f'{att_name}_{{i}}') @ _dollar___offset)\n"
+                string += f"self.{att_name} = {att_name}\n"
 
-    string += f"{indentation}{indentation}"
+    string += f"\n{indentation}{indentation}"
     string += "super().init_struct(_dollar___offset_copy, _dollar___offset.copy())\n"
     string += f"{indentation}{indentation}"
     string += "return self\n"
@@ -308,7 +312,7 @@ def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List
     final_string += "u8, u16, u24, u32, u48, u64, u96, u128, "
     final_string += "s8, s16, s24, s32, s48, s64, s96, s128, "
     final_string += "Float, double, char, char16, Bool, "
-    final_string += "Padding, sizeof, addressof\n\n"
+    final_string += "Padding, Array, sizeof, addressof\n\n"
     struct_name = ""
     bitfield_name = ""
     function_name = ""
@@ -357,7 +361,6 @@ def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List
                     function_name == ""
                     function_name = words[1].split("(")[0].rstrip()
                     opening_brackets = 1
-                    print(function_name)
                 else:
                     if "}" in line:
                         indentation_count -= 1
@@ -377,7 +380,7 @@ def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List
                         words = line[0].split(" ")
                         type_name = words[0]
                         new_var = words[1]
-                        line = f"{new_var}: {type_name} = {type_name}() @ {''.join(line[1:])}"
+                        line = f"{new_var}: {type_name} = {type_name}() @ {''.join(line[1:]).lstrip()}"
                     for _ in range(0, cur_indent):
                         line = indentation + line
                     final_string += line
@@ -404,7 +407,7 @@ def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List
                         length += words[i]
                         i += 1
                     length = length.split("]")[0]
-                    length = f"eval('{length}')"
+                    length = f"{length}"
                     pad_name = f"padding_{padding_count}"
                     padding_count += 1
                     attribs.append(("Padding", pad_name, length, indentation_count))
@@ -418,7 +421,7 @@ def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List
                             length += " " + words[i]
                             i += 1
                         length = length.split("]")[0]
-                        length = f"eval('{length}')"
+                        length = f"{length}"
                         attribs.append((class_name, att_name, length, indentation_count))
                         current_attribs.append(att_name)
                     else:
