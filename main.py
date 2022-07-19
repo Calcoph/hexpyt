@@ -1,3 +1,4 @@
+from operator import truediv
 import os
 import sys
 from typing import List, Tuple
@@ -229,10 +230,7 @@ def get_symbols(rel_path, extra_paths: List[str]):
 
     return new_symbols
 
-def translate_file(input_file_path: str, output_file_path: str, indentation: str="    ", extra_paths: List[str]=[]):
-    with open(input_file_path, "r") as f:
-        lines = f.readlines()
-
+def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List[str]=[]) -> str:
     padding_count = 0
     final_string = "from typing import List\n"
     final_string += "from primitives import Dollar, Struct, BitField, "
@@ -259,6 +257,7 @@ def translate_file(input_file_path: str, output_file_path: str, indentation: str
                 else:
                     raise Exception("Error while parsing #include")
                 type_names.extend(get_symbols(path, extra_paths))
+                final_string += f"from {path.replace('/', '.')} import *\n\n"
             else:
                 words = line.split(" ")
                 if words[0] == "struct":
@@ -290,6 +289,28 @@ def translate_file(input_file_path: str, output_file_path: str, indentation: str
                         function_name = function_name[:-1]
                     function_name = "".join(function_name)
                     opening_brackets = 1
+                else:
+                    if "}" in line:
+                        indentation_count -= 1
+                        line = line.replace("}", "")
+                    cur_indent = indentation_count
+                    line += "\n"
+                    if "{" in line:
+                        indentation_count += 1
+                        line = line.replace(" {", ":")
+                        line = line.replace("{", ":")
+                    line = line.lstrip()
+                    line = line.replace("//", "#")
+                    line = line.replace("else if", "elif")
+                    if "@" in line:
+                        line = line.split("@")
+                        words = line[0].split(" ")
+                        type_name = words[0]
+                        new_var = words[1]
+                        line = f"{new_var}: {type_name} = {type_name}() @ {''.join(line[1:])}"
+                    for _ in range(0, cur_indent):
+                        line = indentation + line
+                    final_string += line
 
         elif struct_name != "":
             docstring += line
@@ -343,7 +364,9 @@ def translate_file(input_file_path: str, output_file_path: str, indentation: str
                         indentation_count += 1
                         line = line.replace(" {", ":")
                         line = line.replace("{", ":")
+                    line = line.lstrip()
                     line = line.replace("//", "#")
+                    line = line.replace("else if", "elif")
                     attribs.append((plain_text,
                                     line,
                                     0,
@@ -378,9 +401,24 @@ def translate_file(input_file_path: str, output_file_path: str, indentation: str
             
             if opening_brackets == 0:
                 function_name = ""
-        
-        else:
-            final_string += line
+
+    return final_string
+
+def translate_text(text: str, indentation: str="    ", extra_paths: List[str]=[]) -> str:
+    lines = text.splitlines(keepends=True)
+    return translate_lines(lines, indentation, extra_paths)
+
+def translate_text_to_file(text: str, output_file_path: str, indentation: str="    ", extra_paths: List[str]=[]):
+    lines = text.splitlines(keepends=True)
+    final_string = translate_lines(lines, indentation, extra_paths)
+    with open(output_file_path, "w") as f:
+        f.write(final_string)
+
+def translate_file(input_file_path: str, output_file_path: str, indentation: str="    ", extra_paths: List[str]=[]):
+    with open(input_file_path, "r") as f:
+        lines = f.readlines()
+
+    final_string = translate_lines(lines, indentation, extra_paths)
 
     with open(output_file_path, "w") as f:
         f.write(final_string)
