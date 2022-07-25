@@ -179,4 +179,4 @@ struct File {
 #     @ (0x00)
 # to:
 #     @ Dollar(0x00, byts)
-file: File = File() @ (0x00)
+file: File = File() @ Dollar(0x00, byts) # This line has been altered manually
