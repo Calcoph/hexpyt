@@ -42,12 +42,12 @@ bitfield bit1 {
         if isinstance(_dollar___offset, IntStruct):
             _dollar___offset = _dollar___offset.to_dollar()
         _dollar___offset_copy = _dollar___offset.copy()
-        _read__able____bytes: bytes = bytes(reversed(_dollar___offset.read(1)))
-        self.a = (_read__able____bytes[0] >> 4) & self._bit_field___masks_dict[1]
-        self.b = (_read__able____bytes[0] >> 3) & self._bit_field___masks_dict[1]
-        self.c = (_read__able____bytes[0] >> 2) & self._bit_field___masks_dict[1]
-        self.d = (_read__able____bytes[0] >> 1) & self._bit_field___masks_dict[1]
+        _read__able____bytes: bytes = _dollar___offset.read(1)
         self.e = (_read__able____bytes[0] >> 0) & self._bit_field___masks_dict[1]
+        self.d = (_read__able____bytes[0] >> 1) & self._bit_field___masks_dict[1]
+        self.c = (_read__able____bytes[0] >> 2) & self._bit_field___masks_dict[1]
+        self.b = (_read__able____bytes[0] >> 3) & self._bit_field___masks_dict[1]
+        self.a = (_read__able____bytes[0] >> 4) & self._bit_field___masks_dict[1]
         super().init_struct(_dollar___offset_copy, _dollar___offset.copy())
         return self
 
@@ -84,47 +84,41 @@ bitfield bit2 {
         if isinstance(_dollar___offset, IntStruct):
             _dollar___offset = _dollar___offset.to_dollar()
         _dollar___offset_copy = _dollar___offset.copy()
-        _read__able____bytes: bytes = bytes(reversed(_dollar___offset.read(8)))
-        self.a = (_read__able____bytes[0] >> 0) & self._bit_field___masks_dict[7]
-        _read__able____bytes = _read__able____bytes[1:]
-        self.b = (_read__able____bytes[0] >> 1) & self._bit_field___masks_dict[7]
-        c = 0
-        c += (_read__able____bytes[0] >> 7) & self._bit_field___masks_dict[1]
-        _read__able____bytes = _read__able____bytes[1:]
-        c <<= 8
-        c += _read__able____bytes[0] & self._bit_field___masks_dict[6]
-        self.c = c
-        d = 0
-        d += (_read__able____bytes[0] >> 6) & self._bit_field___masks_dict[2]
-        _read__able____bytes = _read__able____bytes[1:]
-        d <<= 8
-        d += _read__able____bytes[0] & self._bit_field___masks_dict[5]
-        self.d = d
-        e = 0
-        e += (_read__able____bytes[0] >> 5) & self._bit_field___masks_dict[3]
-        _read__able____bytes = _read__able____bytes[1:]
-        e <<= 8
-        e += _read__able____bytes[0] & self._bit_field___masks_dict[4]
-        self.e = e
-        f = 0
-        f += (_read__able____bytes[0] >> 4) & self._bit_field___masks_dict[4]
-        _read__able____bytes = _read__able____bytes[1:]
-        f <<= 8
-        f += _read__able____bytes[0] & self._bit_field___masks_dict[3]
-        self.f = f
-        g = 0
-        g += (_read__able____bytes[0] >> 3) & self._bit_field___masks_dict[5]
-        _read__able____bytes = _read__able____bytes[1:]
-        g <<= 8
-        g += _read__able____bytes[0] & self._bit_field___masks_dict[2]
-        self.g = g
-        h = 0
-        h += (_read__able____bytes[0] >> 2) & self._bit_field___masks_dict[6]
-        _read__able____bytes = _read__able____bytes[1:]
-        h <<= 8
-        h += _read__able____bytes[0] & self._bit_field___masks_dict[1]
-        self.h = h
+        _read__able____bytes: bytes = _dollar___offset.read(8)
         self.i = (_read__able____bytes[0] >> 0) & self._bit_field___masks_dict[7]
+        h = 0
+        h += ((_read__able____bytes[0] >> 7) & self._bit_field___masks_dict[1]) << 0
+        _read__able____bytes = _read__able____bytes[1:]
+        h += (_read__able____bytes[0] & self._bit_field___masks_dict[6]) << 1
+        self.h = h
+        g = 0
+        g += ((_read__able____bytes[0] >> 6) & self._bit_field___masks_dict[2]) << 0
+        _read__able____bytes = _read__able____bytes[1:]
+        g += (_read__able____bytes[0] & self._bit_field___masks_dict[5]) << 2
+        self.g = g
+        f = 0
+        f += ((_read__able____bytes[0] >> 5) & self._bit_field___masks_dict[3]) << 0
+        _read__able____bytes = _read__able____bytes[1:]
+        f += (_read__able____bytes[0] & self._bit_field___masks_dict[4]) << 3
+        self.f = f
+        e = 0
+        e += ((_read__able____bytes[0] >> 4) & self._bit_field___masks_dict[4]) << 0
+        _read__able____bytes = _read__able____bytes[1:]
+        e += (_read__able____bytes[0] & self._bit_field___masks_dict[3]) << 4
+        self.e = e
+        d = 0
+        d += ((_read__able____bytes[0] >> 3) & self._bit_field___masks_dict[5]) << 0
+        _read__able____bytes = _read__able____bytes[1:]
+        d += (_read__able____bytes[0] & self._bit_field___masks_dict[2]) << 5
+        self.d = d
+        c = 0
+        c += ((_read__able____bytes[0] >> 2) & self._bit_field___masks_dict[6]) << 0
+        _read__able____bytes = _read__able____bytes[1:]
+        c += (_read__able____bytes[0] & self._bit_field___masks_dict[1]) << 6
+        self.c = c
+        self.b = (_read__able____bytes[0] >> 1) & self._bit_field___masks_dict[7]
+        _read__able____bytes = _read__able____bytes[1:]
+        self.a = (_read__able____bytes[0] >> 0) & self._bit_field___masks_dict[7]
         super().init_struct(_dollar___offset_copy, _dollar___offset.copy())
         return self
 
@@ -153,12 +147,11 @@ bitfield bit3 {
         if isinstance(_dollar___offset, IntStruct):
             _dollar___offset = _dollar___offset.to_dollar()
         _dollar___offset_copy = _dollar___offset.copy()
-        _read__able____bytes: bytes = bytes(reversed(_dollar___offset.read(2)))
+        _read__able____bytes: bytes = _dollar___offset.read(2)
         a = 0
-        a += _read__able____bytes[0] & self._bit_field___masks_dict[8]
+        a += ((_read__able____bytes[0] >> 0) & self._bit_field___masks_dict[8]) << 0
         _read__able____bytes = _read__able____bytes[1:]
-        a <<= 8
-        a += _read__able____bytes[0] & self._bit_field___masks_dict[8]
+        a += (_read__able____bytes[0] & self._bit_field___masks_dict[8]) << 8
         self.a = a
         super().init_struct(_dollar___offset_copy, _dollar___offset.copy())
         return self
@@ -188,15 +181,13 @@ bitfield bit4 {
         if isinstance(_dollar___offset, IntStruct):
             _dollar___offset = _dollar___offset.to_dollar()
         _dollar___offset_copy = _dollar___offset.copy()
-        _read__able____bytes: bytes = bytes(reversed(_dollar___offset.read(3)))
+        _read__able____bytes: bytes = _dollar___offset.read(3)
         a = 0
-        a += (_read__able____bytes[0] >> 4) & self._bit_field___masks_dict[4]
+        a += ((_read__able____bytes[0] >> 0) & self._bit_field___masks_dict[8]) << 0
         _read__able____bytes = _read__able____bytes[1:]
-        a <<= 8
-        a += _read__able____bytes[0] & self._bit_field___masks_dict[8]
+        a += ((_read__able____bytes[0] >> 0) & self._bit_field___masks_dict[8]) << 8
         _read__able____bytes = _read__able____bytes[1:]
-        a <<= 8
-        a += _read__able____bytes[0] & self._bit_field___masks_dict[8]
+        a += (_read__able____bytes[0] & self._bit_field___masks_dict[4]) << 16
         self.a = a
         super().init_struct(_dollar___offset_copy, _dollar___offset.copy())
         return self
@@ -227,15 +218,14 @@ bitfield bit5 {
         if isinstance(_dollar___offset, IntStruct):
             _dollar___offset = _dollar___offset.to_dollar()
         _dollar___offset_copy = _dollar___offset.copy()
-        _read__able____bytes: bytes = bytes(reversed(_dollar___offset.read(3)))
-        self.a = (_read__able____bytes[0] >> 0) & self._bit_field___masks_dict[3]
-        _read__able____bytes = _read__able____bytes[1:]
+        _read__able____bytes: bytes = _dollar___offset.read(3)
         b = 0
-        b += _read__able____bytes[0] & self._bit_field___masks_dict[8]
+        b += ((_read__able____bytes[0] >> 0) & self._bit_field___masks_dict[8]) << 0
         _read__able____bytes = _read__able____bytes[1:]
-        b <<= 8
-        b += _read__able____bytes[0] & self._bit_field___masks_dict[8]
+        b += (_read__able____bytes[0] & self._bit_field___masks_dict[8]) << 8
         self.b = b
+        _read__able____bytes = _read__able____bytes[1:]
+        self.a = (_read__able____bytes[0] >> 0) & self._bit_field___masks_dict[3]
         super().init_struct(_dollar___offset_copy, _dollar___offset.copy())
         return self
 
@@ -265,17 +255,15 @@ bitfield bit6 {
         if isinstance(_dollar___offset, IntStruct):
             _dollar___offset = _dollar___offset.to_dollar()
         _dollar___offset_copy = _dollar___offset.copy()
-        _read__able____bytes: bytes = bytes(reversed(_dollar___offset.read(3)))
-        self.a = (_read__able____bytes[0] >> 4) & self._bit_field___masks_dict[3]
+        _read__able____bytes: bytes = _dollar___offset.read(3)
         b = 0
-        b += (_read__able____bytes[0] >> 4) & self._bit_field___masks_dict[4]
+        b += ((_read__able____bytes[0] >> 0) & self._bit_field___masks_dict[8]) << 0
         _read__able____bytes = _read__able____bytes[1:]
-        b <<= 8
-        b += _read__able____bytes[0] & self._bit_field___masks_dict[8]
+        b += ((_read__able____bytes[0] >> 0) & self._bit_field___masks_dict[8]) << 8
         _read__able____bytes = _read__able____bytes[1:]
-        b <<= 8
-        b += _read__able____bytes[0] & self._bit_field___masks_dict[8]
+        b += (_read__able____bytes[0] & self._bit_field___masks_dict[4]) << 16
         self.b = b
+        self.a = (_read__able____bytes[0] >> 4) & self._bit_field___masks_dict[3]
         super().init_struct(_dollar___offset_copy, _dollar___offset.copy())
         return self
 
@@ -305,17 +293,15 @@ bitfield bit7 {
         if isinstance(_dollar___offset, IntStruct):
             _dollar___offset = _dollar___offset.to_dollar()
         _dollar___offset_copy = _dollar___offset.copy()
-        _read__able____bytes: bytes = bytes(reversed(_dollar___offset.read(3)))
-        a = 0
-        a += (_read__able____bytes[0] >> 5) & self._bit_field___masks_dict[3]
-        _read__able____bytes = _read__able____bytes[1:]
-        a <<= 8
-        a += _read__able____bytes[0] & self._bit_field___masks_dict[8]
-        _read__able____bytes = _read__able____bytes[1:]
-        a <<= 8
-        a += _read__able____bytes[0] & self._bit_field___masks_dict[5]
-        self.a = a
+        _read__able____bytes: bytes = _dollar___offset.read(3)
         self.b = (_read__able____bytes[0] >> 0) & self._bit_field___masks_dict[3]
+        a = 0
+        a += ((_read__able____bytes[0] >> 3) & self._bit_field___masks_dict[5]) << 0
+        _read__able____bytes = _read__able____bytes[1:]
+        a += ((_read__able____bytes[0] >> 0) & self._bit_field___masks_dict[8]) << 5
+        _read__able____bytes = _read__able____bytes[1:]
+        a += (_read__able____bytes[0] & self._bit_field___masks_dict[3]) << 13
+        self.a = a
         super().init_struct(_dollar___offset_copy, _dollar___offset.copy())
         return self
 
@@ -345,17 +331,15 @@ bitfield bit8 {
         if isinstance(_dollar___offset, IntStruct):
             _dollar___offset = _dollar___offset.to_dollar()
         _dollar___offset_copy = _dollar___offset.copy()
-        _read__able____bytes: bytes = bytes(reversed(_dollar___offset.read(3)))
-        a = 0
-        a += (_read__able____bytes[0] >> 1) & self._bit_field___masks_dict[7]
-        _read__able____bytes = _read__able____bytes[1:]
-        a <<= 8
-        a += _read__able____bytes[0] & self._bit_field___masks_dict[8]
-        _read__able____bytes = _read__able____bytes[1:]
-        a <<= 8
-        a += _read__able____bytes[0] & self._bit_field___masks_dict[5]
-        self.a = a
+        _read__able____bytes: bytes = _dollar___offset.read(3)
         self.b = (_read__able____bytes[0] >> 0) & self._bit_field___masks_dict[3]
+        a = 0
+        a += ((_read__able____bytes[0] >> 3) & self._bit_field___masks_dict[5]) << 0
+        _read__able____bytes = _read__able____bytes[1:]
+        a += ((_read__able____bytes[0] >> 0) & self._bit_field___masks_dict[8]) << 5
+        _read__able____bytes = _read__able____bytes[1:]
+        a += (_read__able____bytes[0] & self._bit_field___masks_dict[7]) << 13
+        self.a = a
         super().init_struct(_dollar___offset_copy, _dollar___offset.copy())
         return self
 b1: bit1 = bit1() @ Dollar(0x00, byts)

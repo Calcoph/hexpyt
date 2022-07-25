@@ -1,11 +1,7 @@
 from bitfield import *
 # file_path = "../examples/binary_files/bin_file.bin"
+
 assert b1.a == 0
-print(b1.a)
-print(b1.b)
-print(b1.c)
-print(b1.d)
-print(b1.e)
 assert b1.b == 1
 assert b1.c == 0
 assert b1.d == 0

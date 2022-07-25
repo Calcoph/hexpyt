@@ -109,42 +109,37 @@ hexpat definition:
         if name != plain_text:
             total_size += b_size
     total_bytes = total_size//8
-    padding = (8 - (total_size % 8)) % 8
+    padding = total_size % 8
     if padding > 0:
         total_bytes += 1
     string += f"{indentation}{indentation}"
-    string += f"_read__able____bytes: bytes = bytes(reversed(_dollar___offset.read({total_bytes})))\n"
+    string += f"_read__able____bytes: bytes = _dollar___offset.read({total_bytes})\n"
     
     bits_read = 0
-    for name, b_size in attributes:
+    for name, b_size in reversed(attributes):
         if name == plain_text:
             string += f"{indentation}{indentation}{b_size}\n"
             continue
-        if padding+bits_read == 8:
+        if bits_read == 8:
             string += f"{indentation}{indentation}"
             string += f"_read__able____bytes = _read__able____bytes[1:]\n"
-            padding = 0
             bits_read = 0
-        if b_size > 8 or b_size+padding+bits_read > 8:
+        if b_size > 8 or b_size+bits_read > 8:
             string += f"{indentation}{indentation}"
             string += f"{name} = 0\n"
-            while b_size > 8 or b_size+padding+bits_read > 8:
-                bits_to_read = 8-padding-bits_read
+            bit_shift = 0
+            while b_size > 8 or b_size+bits_read > 8:
+                bits_to_read = 8-bits_read
                 string += f"{indentation}{indentation}"
-                if bits_to_read != 8:
-                    string += f"{name} += (_read__able____bytes[0] >> {bits_read+padding}) & self._bit_field___masks_dict[{bits_to_read}]\n"
-                else:
-                    string += f"{name} += _read__able____bytes[0] & self._bit_field___masks_dict[{bits_to_read}]\n"
+                string += f"{name} += ((_read__able____bytes[0] >> {bits_read}) & self._bit_field___masks_dict[{bits_to_read}]) << {bit_shift}\n"
                 string += f"{indentation}{indentation}"
                 string += f"_read__able____bytes = _read__able____bytes[1:]\n"
-                string += f"{indentation}{indentation}"
-                string += f"{name} <<= 8\n"
-                padding = 0
                 bits_read = 0
                 b_size -= bits_to_read
+                bit_shift += bits_to_read
             if b_size > 0:
                 string += f"{indentation}{indentation}"
-                string += f"{name} += _read__able____bytes[0] & self._bit_field___masks_dict[{b_size}]\n"
+                string += f"{name} += (_read__able____bytes[0] & self._bit_field___masks_dict[{b_size}]) << {bit_shift}\n"
                 bits_read = b_size
             else:
                 string += f"{indentation}{indentation}"
@@ -153,7 +148,7 @@ hexpat definition:
             string += f"self.{name} = {name}\n"
         else:
             string += f"{indentation}{indentation}"
-            string += f"self.{name} = (_read__able____bytes[0] >> {8-b_size-padding-bits_read}) & self._bit_field___masks_dict[{b_size}]\n"
+            string += f"self.{name} = (_read__able____bytes[0] >> {bits_read}) & self._bit_field___masks_dict[{b_size}]\n"
             bits_read += b_size
 
     string += f"{indentation}{indentation}"
@@ -341,7 +336,13 @@ _dollar___offset = Dollar(0x00, byts)
     attribs = []
     indentation_count = 0
     opening_brackets = 0
-    defines = [("std::print", "print"), ("$", "_dollar___offset"), ("//", "#"), ("else if", "elif"), ("::", ".")]
+    defines = [
+        ("std::print", "print"),
+        ("$", "_dollar___offset"),
+        ("//", "#"),
+        ("else if", "elif"),
+        ("::", ".")
+        ]
     for line in lines:
         old_line = line
         for (const, replacement) in defines:
@@ -394,6 +395,11 @@ _dollar___offset = Dollar(0x00, byts)
                     function_name = words[1].split("(")[0].rstrip()
                     opening_brackets = 1
                 else:
+                    if line.lstrip().startswith("#"):
+                        for _ in range(0, cur_indent):
+                            line = indentation + line
+                        final_string += line
+                        continue
                     if "}" in line:
                         indentation_count -= 1
                         line = line.replace("}", "")
@@ -486,8 +492,7 @@ _dollar___offset = Dollar(0x00, byts)
                 line = line.lstrip()
                 line = line.rstrip()
                 line = line.split(";")[0]
-                if "//" in line:
-                    line = line.replace("//", "#")
+                if "#" in line:
                     attribs.append((plain_text, line))
                 else:
                     words = line.split(": ")
