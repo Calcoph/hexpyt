@@ -1,3 +1,4 @@
+from math import trunc
 from operator import truediv
 import os
 import sys
@@ -102,55 +103,58 @@ hexpat definition:
 {indentation}{indentation}if isinstance(_dollar___offset, IntStruct):
 {indentation}{indentation}{indentation}_dollar___offset = _dollar___offset.to_dollar()
 {indentation}{indentation}_dollar___offset_copy = _dollar___offset.copy()
-{indentation}{indentation}cur_byte = _dollar___offset.read(1)[0]
 """
-    size = 0
+    total_size = 0
+    for name, b_size in attributes:
+        if name != plain_text:
+            total_size += b_size
+    total_bytes = total_size//8
+    padding = (8 - (total_size % 8)) % 8
+    if padding > 0:
+        total_bytes += 1
+    string += f"{indentation}{indentation}"
+    string += f"_read__able____bytes: bytes = bytes(reversed(_dollar___offset.read({total_bytes})))\n"
+    
+    bits_read = 0
     for name, b_size in attributes:
         if name == plain_text:
             string += f"{indentation}{indentation}{b_size}\n"
-        else:
-            while size >= 8:
-                string += f"{indentation}{indentation}cur_byte = _dollar___offset.read(1)[0]\n"
-                size -= 8
+            continue
+        if padding+bits_read == 8:
             string += f"{indentation}{indentation}"
-            prev_size = size
-            size = prev_size + b_size
+            string += f"_read__able____bytes = _read__able____bytes[1:]\n"
+            padding = 0
             bits_read = 0
-            if size > 8:
-                string += f"self.{name}: int = 0\n"
-                bits_to_read = 0
-                while size >= 8:
-                    last_bits_to_read = bits_to_read
-                    bits_to_read = 8-prev_size
-                    if last_bits_to_read == 8:
-                        string += f"{indentation}{indentation}"
-                        string += f"self.{name} <<= 8\n"
-                    elif last_bits_to_read == 0:
-                        string += f"{indentation}{indentation}"
-                        string += f"self.{name} += (cur_byte >> 8-{bits_to_read}) & self._bit_field___masks_dict[{bits_to_read}]\n"
-                    else:
-                        string += f"{indentation}{indentation}"
-                        string += f"{name} = (cur_byte >> {prev_size}) & self._bit_field___masks_dict[{b_size}]\n"
-                        string += f"{indentation}{indentation}"
-                        string += f"self.{name} += {name} << {last_bits_to_read}\n"
-                    prev_size = 0
-                    b_size -= bits_to_read
-                    if b_size > 0:
-                        string += f"{indentation}{indentation}"
-                        string += f"cur_byte = _dollar___offset.read(1)[0]\n"
-                    size -= 8
-                    bits_read += bits_to_read
-                if b_size > 0:
-                    if bits_read % 8 == 0:
-                        string += f"{indentation}{indentation}"
-                        string += f"self.{name} += (cur_byte >> {prev_size%8}) & self._bit_field___masks_dict[{b_size}]\n"
-                    else:
-                        string += f"{indentation}{indentation}"
-                        string += f"{name} = (cur_byte >> {prev_size%8}) & self._bit_field___masks_dict[{b_size}]\n"
-                        string += f"{indentation}{indentation}"
-                        string += f"self.{name} += {name} << {bits_read%8}\n"
+        if b_size > 8 or b_size+padding+bits_read > 8:
+            string += f"{indentation}{indentation}"
+            string += f"{name} = 0\n"
+            while b_size > 8 or b_size+padding+bits_read > 8:
+                bits_to_read = 8-padding-bits_read
+                string += f"{indentation}{indentation}"
+                if bits_to_read != 8:
+                    string += f"{name} += (_read__able____bytes[0] >> {bits_read+padding}) & self._bit_field___masks_dict[{bits_to_read}]\n"
+                else:
+                    string += f"{name} += _read__able____bytes[0] & self._bit_field___masks_dict[{bits_to_read}]\n"
+                string += f"{indentation}{indentation}"
+                string += f"_read__able____bytes = _read__able____bytes[1:]\n"
+                string += f"{indentation}{indentation}"
+                string += f"{name} <<= 8\n"
+                padding = 0
+                bits_read = 0
+                b_size -= bits_to_read
+            if b_size > 0:
+                string += f"{indentation}{indentation}"
+                string += f"{name} += _read__able____bytes[0] & self._bit_field___masks_dict[{b_size}]\n"
+                bits_read = b_size
             else:
-                string += f"self.{name}: int = (cur_byte >>{prev_size%8}) & self._bit_field___masks_dict[{b_size}]\n"
+                string += f"{indentation}{indentation}"
+                string += f"{name} >>= 8\n"
+            string += f"{indentation}{indentation}"
+            string += f"self.{name} = {name}\n"
+        else:
+            string += f"{indentation}{indentation}"
+            string += f"self.{name} = (_read__able____bytes[0] >> {8-b_size-padding-bits_read}) & self._bit_field___masks_dict[{b_size}]\n"
+            bits_read += b_size
 
     string += f"{indentation}{indentation}"
     string += "super().init_struct(_dollar___offset_copy, _dollar___offset.copy())\n"

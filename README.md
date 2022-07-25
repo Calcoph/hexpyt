@@ -8,7 +8,7 @@ This project is incomplete so it won't parse entire scripts completely. It is no
 * Turn structs into python classes
 * Turn bitfields into python classes (Don't rely on this without testing)
 
-Docstrings contain the original hexpat syntax.
+Docstrings contain the original hexpat syntax. Image is from examples/bin_file.py
 
 ![Demostration of docstring in vscode with syntax highlighting](resources/HoverFile.png)
 
