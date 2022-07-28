@@ -1,6 +1,6 @@
 from __future__ import annotations
 import struct
-from typing import TypeVar, List
+from typing import TypeVar, Union
 
 struct_names = [
     "u8", "u16", "u24", "u32", "u48", "u64", "u96", "u128",
@@ -227,6 +227,7 @@ class Dollar:
 class Struct:
     def __init__(self, name: str=""):
         self.name = name
+        self.breaked = False
     
     def init_struct(self, starting_offset: Dollar, end_offset: Dollar):
         self.address = starting_offset.offset
@@ -762,8 +763,8 @@ class BitField(Struct):
         super().__init__(name)
 
 T = TypeVar('T', bound=Struct)
-class Array(List[T], Struct):
-    def __init__(self, type_: T, length: int) -> None:
+class Array(list[T], Struct):
+    def __init__(self, type_: T, length: int | str) -> None:
         self.type_ = type_
         self.length = length
         list.__init__(self)
@@ -774,8 +775,19 @@ class Array(List[T], Struct):
         if isinstance(other, IntStruct):
             other = other.to_dollar()
         self.clear()
-        for _ in range(0, self.length):
-            self.append(self.type_() @ other)
+        if isinstance(self.length, int):
+            for _ in range(0, self.length):
+                self.append(self.type_() @ other)
+                if self[-1].breaked:
+                    break
+        elif "while" in self.length:
+            bool_statement = self.length.split("while(")[1].split(")")[0].replace("_dollar___offset", "other")
+            while eval(bool_statement):
+                self.append(self.type_() @ other)
+                if self[-1].breaked:
+                    break
+        else:
+            raise Exception(f"Array lengths other than int or while statements are not supported. Received length: {self.length}")
         return self
 
 

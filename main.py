@@ -69,6 +69,8 @@ hexpat definition:
                 string += f"{indentation}{indentation}{current_indentation}"
                 string += f"self.{att_name} = {att_name}\n"
             else:
+                if "while" in array_length:
+                    array_length = f'"{array_length}"'
                 string += f"{att_name}: Array[{class_name}] = Array({class_name}, {array_length}) @ _dollar___offset\n"
                 string += f"{indentation}{indentation}{current_indentation}"
                 string += f"self.{att_name} = {att_name}\n"
@@ -218,6 +220,9 @@ def get_symbols(rel_path, extra_paths: List[str]):
     for line in lines:
         if struct_name == "" and bitfield_name == "":
             words = line.split(" ")
+            if len(words) == 2 and words[0] == "using":
+                new_symbol = words[1].split(";")[0]
+                new_symbols.append(new_symbol)
             if words[0] == "struct":
                 struct_name = list(words[1])
                 if struct_name[-1] == "\n":
@@ -341,15 +346,25 @@ _dollar___offset = Dollar(0x00, byts)
         ("$", "_dollar___offset"),
         ("//", "#"),
         ("else if", "elif"),
-        ("::", ".")
+        ("::", "."),
+        ("break", "self.breaked = True\nreturn self #! TODO: INDENT THIS LIKE THE LINE ABOVE SO IT COMPILES"),
+        ("continue", "return self"),
+        ("true", "True"),
+        ("false", "False")
         ]
     for line in lines:
         old_line = line
         for (const, replacement) in defines:
             line = line.replace(const, replacement)
         if struct_name == "" and bitfield_name == "" and function_name == "":
+            if line.startswith("using"):
+                words = line.split(" ")
+                if len(words) == 2:
+                    new_symbol = words[1].split(";")[0]
+                    type_names.append(new_symbol)
+                    line = f"#{line[:-1]} This using was taken into account\n"
             if line.startswith("#include"):
-                orig_line = line
+                orig_line = f"{line[:-1]} This include was taken into account\n"
                 if '"' in line:
                     path = line.split('"')[1]
                 elif "<" in line:
@@ -362,7 +377,7 @@ _dollar___offset = Dollar(0x00, byts)
                 final_string += orig_line
                 final_string += f"from {path.replace('/', '.')} import *\n\n"
             elif line.startswith("#define"):
-                orig_line = line
+                orig_line = f"{line[:-1]} This include was (probably) taken into account\n"
                 words = line.split(" ")
                 const = words[1]
                 replacement = " ".join(words[2:])
