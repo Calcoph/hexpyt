@@ -775,7 +775,7 @@ class Array(list[T], Struct):
         if isinstance(other, IntStruct):
             other = other.to_dollar()
         self.clear()
-        if isinstance(self.length, int):
+        if isinstance(self.length, int) or isinstance(self.length, IntStruct):
             for _ in range(0, self.length):
                 self.append(self.type_() @ other)
                 if self[-1].breaked:
