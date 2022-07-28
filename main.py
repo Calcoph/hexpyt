@@ -14,8 +14,8 @@ elif sys.platform.startswith("darwin"):
     include_path = macos
     include_path2 = macos
 else:
-    include_path = other
-    include_path2 = other
+    include_path = os.path.expanduser("~/.local/share/imhex/includes/")
+    include_path2 = "/usr/share/imhex/includes/"
 
 plain_text = "PlainText_thisisalongnameonpurposesonobodywoulduseitonaccident"
 
