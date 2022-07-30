@@ -26,6 +26,59 @@ _dollar___offset = Dollar(0x00, byts)
 """
     return final_string
 
+def translate_nameless(ts: TranslateState):
+    words = line.lstrip().split(" ")
+    if words[0] == "struct":
+        ts.docstring = ts.old_line
+        ts.final_string += "\n"
+        ts.struct_name = list(words[1])
+        if ts.struct_name[-1] == "\n":
+            ts.struct_name = ts.struct_name[:-1]
+        if ts.struct_name[-1] == "{":
+            ts.struct_name = ts.struct_name[:-1]
+        ts.struct_name = "".join(ts.struct_name)
+        ts.type_names.append(ts.struct_name)
+    elif words[0] == "bitfield":
+        ts.docstring = ts.old_line
+        ts.final_string += "\n"
+        ts.bitfield_name = list(words[1])
+        if ts.bitfield_name[-1] == "\n":
+            ts.bitfield_name = ts.bitfield_name[:-1]
+        if ts.bitfield_name[-1] == "{":
+            ts.bitfield_name = ts.bitfield_name[:-1]
+        ts.bitfield_name = "".join(ts.bitfield_name)
+        ts.type_names.append(ts.bitfield_name)
+    elif words[0] == "fn":
+        ts.function_name == ""
+        ts.function_name = words[1].split("(")[0].rstrip()
+        ts.opening_brackets = 1
+    else:
+        if line.lstrip().startswith("#"):
+            for _ in range(0, cur_indent):
+                line = ts.indentation + line
+            ts.final_string += line
+        else:
+            if "}" in line:
+                ts.indentation_count -= 1
+                line = line.replace("}", "")
+            cur_indent = ts.indentation_count
+            line += "\n"
+            if "{" in line:
+                ts.indentation_count += 1
+                line = line.replace(" {", ":")
+                line = line.replace("{", ":")
+            line = line.lstrip()
+            if "@" in line:
+                line = line.split("@")
+                words = line[0].split(" ")
+                type_name = words[0]
+                new_var = words[1]
+                expression = ''.join(line[1:]).lstrip().rstrip().replace(";", "")
+                line = f"{new_var}: {type_name} = {type_name}() @ ({expression})\n"
+            for _ in range(0, cur_indent):
+                line = ts.indentation + line
+            ts.final_string += line
+
 def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List[str]=[]) -> str:
     lines = remove_namespaces(lines)
 
@@ -37,57 +90,7 @@ def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List
             line = line.replace(const, replacement)
         if ts.struct_name == "" and ts.bitfield_name == "" and ts.function_name == "":
             if not try_preproc(ts, extra_paths):
-                words = line.lstrip().split(" ")
-                if words[0] == "struct":
-                    ts.docstring = ts.old_line
-                    ts.final_string += "\n"
-                    ts.struct_name = list(words[1])
-                    if ts.struct_name[-1] == "\n":
-                        ts.struct_name = ts.struct_name[:-1]
-                    if ts.struct_name[-1] == "{":
-                        ts.struct_name = ts.struct_name[:-1]
-                    ts.struct_name = "".join(ts.struct_name)
-                    ts.type_names.append(ts.struct_name)
-                elif words[0] == "bitfield":
-                    ts.docstring = ts.old_line
-                    ts.final_string += "\n"
-                    ts.bitfield_name = list(words[1])
-                    if ts.bitfield_name[-1] == "\n":
-                        ts.bitfield_name = ts.bitfield_name[:-1]
-                    if ts.bitfield_name[-1] == "{":
-                        ts.bitfield_name = ts.bitfield_name[:-1]
-                    ts.bitfield_name = "".join(ts.bitfield_name)
-                    ts.type_names.append(ts.bitfield_name)
-                elif words[0] == "fn":
-                    ts.function_name == ""
-                    ts.function_name = words[1].split("(")[0].rstrip()
-                    ts.opening_brackets = 1
-                else:
-                    if line.lstrip().startswith("#"):
-                        for _ in range(0, cur_indent):
-                            line = indentation + line
-                        ts.final_string += line
-                        continue
-                    if "}" in line:
-                        ts.indentation_count -= 1
-                        line = line.replace("}", "")
-                    cur_indent = ts.indentation_count
-                    line += "\n"
-                    if "{" in line:
-                        ts.indentation_count += 1
-                        line = line.replace(" {", ":")
-                        line = line.replace("{", ":")
-                    line = line.lstrip()
-                    if "@" in line:
-                        line = line.split("@")
-                        words = line[0].split(" ")
-                        type_name = words[0]
-                        new_var = words[1]
-                        expression = ''.join(line[1:]).lstrip().rstrip().replace(";", "")
-                        line = f"{new_var}: {type_name} = {type_name}() @ ({expression})\n"
-                    for _ in range(0, cur_indent):
-                        line = indentation + line
-                    ts.final_string += line
+                translate_nameless(ts)
 
         elif ts.struct_name != "":
             translate_struct(ts)
