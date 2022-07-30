@@ -226,293 +226,307 @@ class Dollar:
 
 class Struct:
     def __init__(self, name: str=""):
-        self.name = name
-        self.breaked = False
+        self.____name________ = name
+        self.___breaked___ = False
     
     def init_struct(self, starting_offset: Dollar, end_offset: Dollar):
-        self.address = starting_offset.offset
-        self.dollar = end_offset
-        self.size = end_offset.offset - self.address
-
+        self.__address____ = starting_offset.offset
+        self.___dollar______ = end_offset
+        self.__size_______ = end_offset.offset - self.__address____
+    
+    def name(self) -> str:
+        return self.____name________
+    
+    def breaked(self) -> bool:
+        return self.___breaked___
+    
+    def dollar(self) -> Dollar:
+        return self.___dollar______
+    
+    def size(self) -> int:
+        self.__size_______
 class IntStruct(Struct):
     def __init__(self, name: str=""):
-        self.value: int
+        self.___value_____: int
         super().__init__(name)
+    
+    def value(self) -> int:
+        self.___value_____
 
     def to_dollar(self) -> Dollar:
-        return Dollar(self.value, self.dollar.byts)
+        return Dollar(self.___value_____, self.___dollar______.byts)
 
     def __repr__(self) -> str:
-        return self.value.__repr__()
+        return self.___value_____.__repr__()
     
     def __str__(self) -> str:
-        return self.value.__str__()
+        return self.___value_____.__str__()
 
     def __format__(self, format_spec) -> str:
-        return self.value.__format__(format_spec)
+        return self.___value_____.__format__(format_spec)
 
     def __lt__(self, other) -> bool:
-        return self.value.__lt__(int(other))
+        return self.___value_____.__lt__(int(other))
 
     def __le__(self, other) -> bool:
-        return self.value.__le__(int(other))
+        return self.___value_____.__le__(int(other))
 
     def __eq__(self, other) -> bool:
-        return self.value.__eq__(int(other))
+        return self.___value_____.__eq__(int(other))
 
     def __ne__(self, other) -> bool:
-        return self.value.__ne__(int(other))
+        return self.___value_____.__ne__(int(other))
 
     def __gt__(self, other) -> bool:
-        return self.value.__gt__(int(other))
+        return self.___value_____.__gt__(int(other))
 
     def __ge__(self, other) -> bool:
-        return self.value.__ge__(int(other))
+        return self.___value_____.__ge__(int(other))
     
     def __hash__(self) -> int:
-        return self.value.__hash__()
+        return self.___value_____.__hash__()
     
     def __bool__(self) -> bool:
-        return self.value.__bool__()
+        return self.___value_____.__bool__()
     
     def __add__(self, other) -> IntStruct:
-        result = self.value.__add__(int(other))
+        result = self.___value_____.__add__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __sub__(self, other) -> IntStruct:
-        result = self.value.__sub__(int(other))
+        result = self.___value_____.__sub__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __mul__(self, other) -> IntStruct:
-        result = self.value.__mul__(int(other))
+        result = self.___value_____.__mul__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __truediv__(self, other):
-        return self.value.__truediv__(int(other))
+        return self.___value_____.__truediv__(int(other))
 
     def __floordiv__(self, other) -> IntStruct:
-        result = self.value.__floordiv__(int(other))
+        result = self.___value_____.__floordiv__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __mod__(self, other) -> IntStruct:
-        result = self.value.__mod__(int(other))
+        result = self.___value_____.__mod__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __divmod__(self, other):
-        return self.value.__divmod__(other)
+        return self.___value_____.__divmod__(other)
 
     def __pow__(self, other) -> IntStruct:
-        result = self.value.__pow__(int(other))
+        result = self.___value_____.__pow__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __lshift__(self, other) -> IntStruct:
-        result = self.value.__lshift__(int(other))
+        result = self.___value_____.__lshift__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __rshift__(self, other) -> IntStruct:
-        result = self.value.__rshift__(int(other))
+        result = self.___value_____.__rshift__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
     
     def __and__(self, other) -> IntStruct:
-        result = self.value.__and__(int(other))
+        result = self.___value_____.__and__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __xor__(self, other) -> IntStruct:
-        result = self.value.__xor__(int(other))
+        result = self.___value_____.__xor__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __radd__(self, other) -> IntStruct:
-        result = self.value.__radd__(int(other))
+        result = self.___value_____.__radd__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __rsub__(self, other) -> IntStruct:
-        result = self.value.__rsub__(int(other))
+        result = self.___value_____.__rsub__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __rmul__(self, other) -> IntStruct:
-        result = self.value.__rmul__(int(other))
+        result = self.___value_____.__rmul__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __rtruediv__(self, other) -> IntStruct:
-        result = self.value.__rtruediv__(int(other))
+        result = self.___value_____.__rtruediv__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __rfloordiv__(self, other) -> IntStruct:
-        result = self.value.__rfloordiv__(int(other))
+        result = self.___value_____.__rfloordiv__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __rmod__(self, other) -> IntStruct:
-        result = self.value.__rmod__(int(other))
+        result = self.___value_____.__rmod__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __rdivmod__(self, other):
-        return self.value.__rdivmod__(int(other))
+        return self.___value_____.__rdivmod__(int(other))
 
     def __rpow__(self, other):
-        return self.value.__rpow__(int(other))
+        return self.___value_____.__rpow__(int(other))
 
     def __rlshift__(self, other) -> IntStruct:
-        result = self.value.__rlshift__(int(other))
+        result = self.___value_____.__rlshift__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __rrshift__(self, other) -> IntStruct:
-        result = self.value.__rrshift__(int(other))
+        result = self.___value_____.__rrshift__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __rand__(self, other) -> IntStruct:
-        result = self.value.__rand__(int(other))
+        result = self.___value_____.__rand__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __rxor__(self, other) -> IntStruct:
-        result = self.value.__rxor__(int(other))
+        result = self.___value_____.__rxor__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __ror__(self, other) -> IntStruct:
-        result = self.value.__ror__(int(other))
+        result = self.___value_____.__ror__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __iadd__(self, other):
-        self.value += int(other)
+        self.___value_____ += int(other)
         return self
 
     def __isub__(self, other):
-        self.value -= int(other)
+        self.___value_____ -= int(other)
         return self
 
     def __imul__(self, other):
-        self.value *= int(other)
+        self.___value_____ *= int(other)
         return self
 
     def __itruediv__(self, other):
-        self.value /= int(other)
+        self.___value_____ /= int(other)
         return self
 
     def __ifloordiv__(self, other):
-        self.value //= int(other)
+        self.___value_____ //= int(other)
         return self
 
     def __imod__(self, other):
-        self.value %= int(other)
+        self.___value_____ %= int(other)
         return self
 
     def __ipow__(self, other):
-        self.value **= int(other)
+        self.___value_____ **= int(other)
         return self
 
     def __ilshift__(self, other):
-        self.value <<= int(other)
+        self.___value_____ <<= int(other)
         return self
 
     def __irshift__(self, other):
-        self.value >>= int(other)
+        self.___value_____ >>= int(other)
         return self
 
     def __iand__(self, other):
-        self.value &= int(other)
+        self.___value_____ &= int(other)
         return self
 
     def __ixor__(self, other):
-        self.value ^= int(other)
+        self.___value_____ ^= int(other)
         return self
 
     def __ior__(self, other):
-        self.value |= int(other)
+        self.___value_____ |= int(other)
         return self
 
     def __neg__(self, other) -> IntStruct:
-        result = self.value.__neg__(int(other))
+        result = self.___value_____.__neg__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __pos__(self, other) -> IntStruct:
-        result = self.value.__pos__(int(other))
+        result = self.___value_____.__pos__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __abs__(self, other) -> IntStruct:
-        result = self.value.__abs__(int(other))
+        result = self.___value_____.__abs__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
 
     def __invert__(self, other) -> IntStruct:
-        result = self.value.__invert__(int(other))
+        result = self.___value_____.__invert__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        result.___dollar______ = self.___dollar______.copy()
         return result
     
     def __complex__(self):
-        return self.value.__complex__()
+        return self.___value_____.__complex__()
 
     def __int__(self):
-        return self.value
+        return self.___value_____
 
     def __float__(self):
-        return self.value.__float__()
+        return self.___value_____.__float__()
 
     def __round__(self) -> IntStruct:
-        return self.value.__round__()
+        return self.___value_____.__round__()
 
     def __trunc__(self) -> IntStruct:
-        return self.value.__trunc__()
+        return self.___value_____.__trunc__()
 
     def __floord__(self):
-        return self.value.__floord__()
+        return self.___value_____.__floord__()
 
     def __ceil__(self) -> IntStruct:
-        return self.value.__ceil__()
+        return self.___value_____.__ceil__()
     
     def __index__(self):
-        return self.value
+        return self.___value_____
 
 class UnsignedLe(IntStruct):
     def __init__(self, length: int, value: int=0, name: str=""):
-        self.length = length
-        self.value = value
+        self.___length_______ = length
+        self.___value_____ = value
         super().__init__(name)
     
     def __matmul__(self, other):
@@ -521,9 +535,12 @@ class UnsignedLe(IntStruct):
         if isinstance(other, IntStruct):
             other = other.to_dollar()
         starting_offset = other.copy()
-        self.value = le_to_int(other.read(self.length))
+        self.___value_____ = le_to_int(other.read(self.___length_______))
         super().init_struct(starting_offset, other.copy())
         return self
+    
+    def length(self) -> int:
+        return self.___length_______
 
 class u8(UnsignedLe):
     def __init__(self, value: int=0, name: str=""):
@@ -559,9 +576,12 @@ class u128(UnsignedLe):
 
 class SignedLe(IntStruct):
     def __init__(self, length: int, value: int=0, name: str=""):
-        self.length = length
-        self.value = value
+        self.___length_____ = length
+        self.___value_____ = value
         super().__init__(name)
+
+    def length(self) -> int:
+        return self.___length_____
 
     def __matmul__(self, other):
         if not (isinstance(other, Dollar) or isinstance(other, IntStruct)):
@@ -569,16 +589,16 @@ class SignedLe(IntStruct):
         if isinstance(other, IntStruct):
             other = other.to_dollar()
         starting_offset = other.copy()
-        self.value = le_to_int(other.read(self.length))
+        self.___value_____ = le_to_int(other.read(self.___length_____))
         
         negative_threshold_bytes = b'\x80'
-        for _ in range(1,self.length):
+        for _ in range(1,self.___length_____):
             negative_threshold_bytes = b'\x00' + negative_threshold_bytes
         negative_threshold = 0
         for (exponent, byte) in enumerate(negative_threshold_bytes):
             negative_threshold += byte << 8*exponent
         max_ = negative_threshold*2+1
-        self.value = -(max_ - self.value)-1
+        self.___value_____ = -(max_ - self.___value_____)-1
         super().init_struct(starting_offset, other.copy())
         return self
 
@@ -616,9 +636,15 @@ class s128(SignedLe):
 
 class RealNum(Struct):
     def __init__(self, length: int, value: float=0.0, name: str=""):
-        self.length = length
-        self.value = value
+        self.___length________ = length
+        self.___value_______ = value
         super().__init__(name)
+    
+    def length(self) -> int:
+        return self.___length________
+    
+    def value(self) -> float:
+        return self.___value_______
     
     def __matmul__(self, other):
         if not (isinstance(other, Dollar) or isinstance(other, IntStruct)):
@@ -626,23 +652,23 @@ class RealNum(Struct):
         if isinstance(other, IntStruct):
             other = other.to_dollar()
         starting_offset = other.copy()
-        self.value = other.read(self.length)
-        if self.length == 4:
+        self.___value_______ = other.read(self.___length________)
+        if self.___length________ == 4:
             format_ = "<f"
-        elif self.length == 8:
+        elif self.___length________ == 8:
             format_ = "<d"
-        self.value = struct.unpack(format_, self.value)
+        self.___value_______ = struct.unpack(format_, self.___value_______)
         super().init_struct(starting_offset, other.copy())
         return self
     
     def __repr__(self):
-        return self.value.__repr__()
+        return self.___value_______.__repr__()
     
     def __str__(self):
-        return self.value.__str__()
+        return self.___value_______.__str__()
 
     def __format__(self, format_spec):
-        return self.value.__format__(format_spec)
+        return self.___value_______.__format__(format_spec)
 
 class Float(RealNum):
     def __init__(self, value: float=0.0, name: str=""):
@@ -654,29 +680,35 @@ class double(RealNum):
 
 class Character(Struct):
     def __init__(self, length: int, value: str="\0", name: str=""):
-        self.length = length
-        self.value = value
+        self.___length_____ = length
+        self.___value_____ = value
         super().__init__(name)
     
+    def length(self) -> int:
+        return self.___length_____
+    
+    def value(self) -> str:
+        return self.___value_____
+
     def __matmul__(self, other):
         if not (isinstance(other, Dollar) or isinstance(other, IntStruct)):
             raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {type(other)} was used instead')
         if isinstance(other, IntStruct):
             other = other.to_dollar()
         starting_offset = other.copy()
-        self.value = other.read(self.length)
-        self.value = "".join(map(chr, self.value))
+        self.___value_____ = other.read(self.___length_____)
+        self.___value_____ = "".join(map(chr, self.___value_____))
         super().init_struct(starting_offset, other.copy())
         return self
 
     def __repr__(self):
-        return self.value.__repr__()
+        return self.___value_____.__repr__()
     
     def __str__(self):
-        return self.value.__str__()
+        return self.___value_____.__str__()
 
     def __format__(self, format_spec):
-        return self.value.__format__(format_spec)
+        return self.___value_____.__format__(format_spec)
 
 class char(Character):
     def __init__(self, value: str="\0", name: str=""):
@@ -688,65 +720,80 @@ class char16(Character):
 
 class Bool(Struct):
     def __init__(self, value: bool=False, name: str="", false_range=range(0x00,0x01), true_range=range(0x01,0xFF)):
-        self.false_range = false_range
-        self.true_range = true_range
-        self.value = value
+        self.___false_range_____ = false_range
+        self.___true_range_____ = true_range
+        self.___value_____ = value
         super().__init__(name)
     
+    def false_range(self) -> range:
+        return self.false_range
+
+    def true_range(self) -> range:
+        return self.true_range
+    
+    def value(self) -> bool:
+        return self.___value_____
+
     def __matmul__(self, other):
         if not (isinstance(other, Dollar) or isinstance(other, IntStruct)):
             raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {type(other)} was used instead')
         if isinstance(other, IntStruct):
             other = other.to_dollar()
         starting_offset = other.copy()
-        self.value = le_to_int(other.read(1))
-        if self.false_range == range(0x00,0x01):
-            if self.value in self.true_range:
-                self.value = True
+        self.___value_____ = le_to_int(other.read(1))
+        if self.___false_range_____ == range(0x00,0x01):
+            if self.___value_____ in self.___true_range_____:
+                self.___value_____ = True
             else:
-                self.value = False
+                self.___value_____ = False
         else:
-            if self.value in self.false_range:
-                self.value = False
+            if self.___value_____ in self.___false_range_____:
+                self.___value_____ = False
             else:
-                self.value = True
+                self.___value_____ = True
 
         super().init_struct(starting_offset, other.copy())
         return self
     
     def __repr__(self):
-        return self.value.__repr__()
+        return self.___value_____.__repr__()
     
     def __str__(self):
-        return self.value.__str__()
+        return self.___value_____.__str__()
 
     def __format__(self, format_spec):
-        return self.value.__format__(format_spec)
+        return self.___value_____.__format__(format_spec)
 
 class Padding(Struct):
     def __init__(self, length: int, value: int=0, name: str=""):
-        self.length = length
-        self.value = value
+        self.___length______ = length
+        self.___value___ = value
         super().__init__(name)
     
+    def length(self) -> int:
+        return self.___length______
+    
+    def value(self) -> int:
+        return self.___value___
+
     def __matmul__(self, other):
         if not (isinstance(other, Dollar) or isinstance(other, IntStruct)):
             raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {type(other)} was used instead')
         if isinstance(other, IntStruct):
             other = other.to_dollar()
         starting_offset = other.copy()
-        self.value = other.read(self.length)
+        self.___value___ = other.read(self.___length______)
         super().init_struct(starting_offset, other.copy())
         return self
     
     def __repr__(self):
-        return f"padding[{self.length}]"
+        return f"padding[{self.___length______}]"
     
     def __str__(self):
-        return f"padding[{self.length}]"
+        return f"padding[{self.___length______}]"
 
     def __format__(self, format_spec):
-        return f"padding[{self.length}]".__format__(format_spec)
+        return f"padding[{self.___length______}]".__format__(format_spec)
 
 class BitField(Struct):
     _bit_field___masks_dict = {
@@ -765,8 +812,8 @@ class BitField(Struct):
 T = TypeVar('T', bound=Struct)
 class Array(list[T], Struct):
     def __init__(self, type_: T, length: int | str) -> None:
-        self.type_ = type_
-        self.length = length
+        self.___type_____ = type_
+        self.___length__ = length
         list.__init__(self)
     
     def __matmul__(self, other):
@@ -775,24 +822,24 @@ class Array(list[T], Struct):
         if isinstance(other, IntStruct):
             other = other.to_dollar()
         self.clear()
-        if isinstance(self.length, int) or isinstance(self.length, IntStruct):
-            for _ in range(0, self.length):
-                self.append(self.type_() @ other)
-                if self[-1].breaked:
+        if isinstance(self.___length__, int) or isinstance(self.___length__, IntStruct):
+            for _ in range(0, self.___length__):
+                self.append(self.___type_____() @ other)
+                if self[-1].___breaked___:
                     break
-        elif "while" in self.length:
-            bool_statement = self.length.split("while(")[1].split(")")[0].replace("_dollar___offset", "other")
+        elif "while" in self.___length__:
+            bool_statement = self.___length__.split("while(")[1].split(")")[0].replace("_dollar___offset", "other")
             while eval(bool_statement):
-                self.append(self.type_() @ other)
-                if self[-1].breaked:
+                self.append(self.___type_____() @ other)
+                if self[-1].___breaked___:
                     break
         else:
-            raise Exception(f"Array lengths other than int or while statements are not supported. Received length: {self.length}")
+            raise Exception(f"Array lengths other than int or while statements are not supported. Received length: {self.___length__}")
         return self
 
 
 def sizeof(struct: Struct) -> int:
-    return struct.size
+    return struct.__size_______
 
 def addressof(struct: Struct) -> int:
-    return struct.address
+    return struct.__address____
