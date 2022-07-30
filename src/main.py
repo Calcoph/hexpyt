@@ -113,18 +113,18 @@ def translate_text(text: str, indentation: str="    ", extra_paths: List[str]=[]
 
 def translate_text_to_file(text: str, output_file_path: str, indentation: str="    ", extra_paths: List[str]=[]):
     lines = text.splitlines(keepends=True)
-    ts.final_string = translate_lines(lines, indentation, extra_paths)
+    final_string = translate_lines(lines, indentation, extra_paths)
     with open(output_file_path, "w") as f:
-        f.write(ts.final_string)
+        f.write(final_string)
 
 def translate_file(input_file_path: str, output_file_path: str, indentation: str="    ", extra_paths: List[str]=[]):
     with open(input_file_path, "r") as f:
         lines = f.readlines()
 
-    ts.final_string = translate_lines(lines, indentation, extra_paths)
+    final_string = translate_lines(lines, indentation, extra_paths)
 
     with open(output_file_path, "w") as f:
-        f.write(ts.final_string)
+        f.write(final_string)
 
 if __name__ == "__main__":
     input_file_path = ""
