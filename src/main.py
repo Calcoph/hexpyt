@@ -28,7 +28,7 @@ _dollar___offset = Dollar(0x00, byts)
 
 def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List[str]=[]) -> str:
     lines = remove_namespaces(lines)
-    padding_count = 0
+
     header = get_header()
     ts = TranslateState(header, indentation)
     for line in lines:

@@ -86,8 +86,8 @@ def translate_struct(ts: TranslateState):
                 i += 1
             length = length.split("]")[0]
             length = f"{length}"
-            pad_name = f"padding_{padding_count}"
-            padding_count += 1
+            pad_name = f"padding_{ts.padding_count}"
+            ts.padding_count += 1
             ts.attribs.append(("Padding", pad_name, length, ts.indentation_count))
         elif words[0] in ts.type_names:
             class_name = words[0]
