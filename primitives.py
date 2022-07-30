@@ -1,6 +1,6 @@
 from __future__ import annotations
 import struct
-from typing import TypeVar, Union
+from typing import Type, TypeVar, Union
 
 struct_names = [
     "u8", "u16", "u24", "u32", "u48", "u64", "u96", "u128",
@@ -811,10 +811,11 @@ class BitField(Struct):
 
 T = TypeVar('T', bound=Struct)
 class Array(list[T], Struct):
-    def __init__(self, type_: T, length: int | str) -> None:
+    def __init__(self, type_: Type[T], length: int | str, name: str="") -> None:
         self.___type_____ = type_
         self.___length__ = length
         list.__init__(self)
+        Struct.__init__(name)
     
     def __matmul__(self, other):
         if not (isinstance(other, Dollar) or isinstance(other, IntStruct)):
@@ -837,6 +838,92 @@ class Array(list[T], Struct):
             raise Exception(f"Array lengths other than int or while statements are not supported. Received length: {self.___length__}")
         return self
 
+class EnumException(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+
+V = TypeVar('V', bound=IntStruct|RealNum|Character|Bool)
+
+class Enum(Struct):
+    __valid____types_____ = [type(IntStruct), type(RealNum), type(Character), type(Bool)]
+    def __init__(self, type_: Type[V], value: V=None, name: str=""):
+        if type(type_) not in self.__valid____types_____:
+            errormsg = "Enum types must be one of the following: \n"
+            errormsg += "\tIntStruct: u8, s16, ...\n"
+            errormsg += "\tFloat, double\n"
+            errormsg += "\tchar, char16\n"
+            errormsg += "\tBool"
+            raise EnumException(errormsg)
+        self._enum__value_____ = value
+        self.___type_____ = type_
+        super().__init__(name)
+
+    def name(self) -> str:
+        if super().name(self) != "" or self.value().name() != "":
+            if super().name(self) != "":
+                name = super().name(self)
+            else:
+                name = self.value().name()
+            if self.value() in self._enum__dict___:
+                name = f"{name}: {self._enum__dict___[self.value()]}"
+            else:
+                name = f"{name}: ???"
+        else:
+            if self.value() in self._enum__dict___:
+                name = f"{self._enum__dict___[self.value()]}"
+            else:
+                name = f"???"
+        return name
+    
+    def value(self) -> V:
+        return self._enum__value_____
+
+    def inner_value(self):
+        return self.value().value()
+
+    def __matmul__(self, other):
+        self._enum__value_____ = self.___type_____() @ other
+        return self
+
+I = TypeVar('I', bound=IntStruct)
+
+class IntEnum(Enum, IntStruct):
+    def __init__(self, type_: I, value: V=None, name: str=""):
+        if type_ != type(IntStruct):
+            errormsg = "IntEnum type must be: \n"
+            errormsg += "\tIntStruct: u8, s16, ..."
+            raise EnumException(errormsg)
+        super().__init__(type_, value, name)
+
+R = TypeVar('R', bound=RealNum)
+
+class FloatEnum(Enum, RealNum):
+    def __init__(self, type_: R, value: V=None, name: str=""):
+        if type_ != type(RealNum):
+            errormsg = "FloatEnum type must be: \n"
+            errormsg += "\tRealNum: Float, double"
+            raise EnumException(errormsg)
+        super().__init__(type_, value, name)
+
+C = TypeVar('C', bound=IntStruct)
+
+class CharEnum(Enum, Character):
+    def __init__(self, type_: C, value: V=None, name: str=""):
+        if type_ != type(Character):
+            errormsg = "CharEnum type must be: \n"
+            errormsg += "\tCharacter: char, char16"
+            raise EnumException(errormsg)
+        super().__init__(type_, value, name)
+
+B = TypeVar('B', bound=IntStruct)
+
+class BoolEnum(Enum, Bool):
+    def __init__(self, type_: B, value: V=None, name: str=""):
+        if type_ != type(Bool):
+            errormsg = "BoolEnum type must be: \n"
+            errormsg += "\tBool"
+            raise EnumException(errormsg)
+        super().__init__(type_, value, name)
 
 def sizeof(struct: Struct) -> int:
     return struct.__size_______
