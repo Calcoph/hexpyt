@@ -20,15 +20,15 @@ def try_preproc(ts: TranslateState, extra_paths):
         ts.type_names.extend(get_symbols(path, extra_paths))
         path = path.replace(".pat", "")
         path = path.replace(".hexpat", "")
-        final_string += orig_line
-        final_string += f"from {path.replace('/', '.')} import *\n\n"
+        ts.final_string += orig_line
+        ts.final_string += f"from {path.replace('/', '.')} import *\n\n"
     elif line.startswith("#define"):
         orig_line = f"{line[:-1]} This include was (probably) taken into account\n"
         words = line.split(" ")
         const = words[1]
         replacement = " ".join(words[2:])
         ts.defines.append((const, replacement))
-        final_string += orig_line
+        ts.final_string += orig_line
     else:
         has_entered = False
     

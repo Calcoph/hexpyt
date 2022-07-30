@@ -83,7 +83,7 @@ hexpat definition:
 def translate_bitfield(ts: TranslateState):
     ts.docstring += ts.old_line
     if line.lstrip()[0] == "}":
-        final_string += make_bitfield(ts.bitfield_name, ts.attribs, ts.docstring, ts.indentation)
+        ts.final_string += make_bitfield(ts.bitfield_name, ts.attribs, ts.docstring, ts.indentation)
         ts.attribs = []
         ts.current_attribs = []
         ts.bitfield_name = ""

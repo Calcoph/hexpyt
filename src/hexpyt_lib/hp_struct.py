@@ -66,7 +66,7 @@ hexpat definition:
 def translate_struct(ts: TranslateState):
     ts.docstring += ts.old_line
     if line[0] == "}":
-        final_string += make_struct(ts.struct_name, ts.attribs, ts.docstring, ts.indentation)
+        ts.final_string += make_struct(ts.struct_name, ts.attribs, ts.docstring, ts.indentation)
         ts.attribs = []
         ts.current_attribs = []
         ts.struct_name = ""

@@ -3,7 +3,8 @@ import primitives
 plain_text = "PlainText_thisisalongnameonpurposesonobodywoulduseitonaccident"
 
 class TranslateState:
-    def __init__(self, indentation: str) -> None:
+    def __init__(self, header: str, indentation: str) -> None:
+        self.final_string = header
         self.struct_name = ""
         self.bitfield_name = ""
         self.function_name = ""

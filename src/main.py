@@ -6,9 +6,7 @@ from hexpyt_lib.hp_bitfield import translate_bitfield
 from src.hexpyt_lib.hp_consts import *
 from src.hexpyt_lib.hp_preproc import try_preproc
 
-def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List[str]=[]) -> str:
-    lines = remove_namespaces(lines)
-    padding_count = 0
+def get_header() -> str:
     final_string = "from primitives import Dollar, Struct, BitField, IntStruct, "
     final_string += "u8, u16, u24, u32, u48, u64, u96, u128, "
     final_string += "s8, s16, s24, s32, s48, s64, s96, s128, "
@@ -26,7 +24,13 @@ else:
 _dollar___offset = Dollar(0x00, byts)
 # End of template
 """
-    ts = TranslateState(indentation)
+    return final_string
+
+def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List[str]=[]) -> str:
+    lines = remove_namespaces(lines)
+    padding_count = 0
+    header = get_header()
+    ts = TranslateState(header, indentation)
     for line in lines:
         ts.old_line = line
         for (const, replacement) in ts.defines:
@@ -36,7 +40,7 @@ _dollar___offset = Dollar(0x00, byts)
                 words = line.lstrip().split(" ")
                 if words[0] == "struct":
                     ts.docstring = ts.old_line
-                    final_string += "\n"
+                    ts.final_string += "\n"
                     ts.struct_name = list(words[1])
                     if ts.struct_name[-1] == "\n":
                         ts.struct_name = ts.struct_name[:-1]
@@ -46,7 +50,7 @@ _dollar___offset = Dollar(0x00, byts)
                     ts.type_names.append(ts.struct_name)
                 elif words[0] == "bitfield":
                     ts.docstring = ts.old_line
-                    final_string += "\n"
+                    ts.final_string += "\n"
                     ts.bitfield_name = list(words[1])
                     if ts.bitfield_name[-1] == "\n":
                         ts.bitfield_name = ts.bitfield_name[:-1]
@@ -62,7 +66,7 @@ _dollar___offset = Dollar(0x00, byts)
                     if line.lstrip().startswith("#"):
                         for _ in range(0, cur_indent):
                             line = indentation + line
-                        final_string += line
+                        ts.final_string += line
                         continue
                     if "}" in line:
                         ts.indentation_count -= 1
@@ -83,7 +87,7 @@ _dollar___offset = Dollar(0x00, byts)
                         line = f"{new_var}: {type_name} = {type_name}() @ ({expression})\n"
                     for _ in range(0, cur_indent):
                         line = indentation + line
-                    final_string += line
+                    ts.final_string += line
 
         elif ts.struct_name != "":
             translate_struct(ts)
@@ -101,7 +105,7 @@ _dollar___offset = Dollar(0x00, byts)
             if ts.opening_brackets == 0:
                 ts.function_name = ""
 
-    return final_string
+    return ts.final_string
 
 def translate_text(text: str, indentation: str="    ", extra_paths: List[str]=[]) -> str:
     lines = text.splitlines(keepends=True)
@@ -109,18 +113,18 @@ def translate_text(text: str, indentation: str="    ", extra_paths: List[str]=[]
 
 def translate_text_to_file(text: str, output_file_path: str, indentation: str="    ", extra_paths: List[str]=[]):
     lines = text.splitlines(keepends=True)
-    final_string = translate_lines(lines, indentation, extra_paths)
+    ts.final_string = translate_lines(lines, indentation, extra_paths)
     with open(output_file_path, "w") as f:
-        f.write(final_string)
+        f.write(ts.final_string)
 
 def translate_file(input_file_path: str, output_file_path: str, indentation: str="    ", extra_paths: List[str]=[]):
     with open(input_file_path, "r") as f:
         lines = f.readlines()
 
-    final_string = translate_lines(lines, indentation, extra_paths)
+    ts.final_string = translate_lines(lines, indentation, extra_paths)
 
     with open(output_file_path, "w") as f:
-        f.write(final_string)
+        f.write(ts.final_string)
 
 if __name__ == "__main__":
     input_file_path = ""
