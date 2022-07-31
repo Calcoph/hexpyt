@@ -246,8 +246,11 @@ class Struct:
     def dollar(self) -> Dollar:
         return self.___dollar______
     
-    def size(self) -> int:
-        self.__size_______
+    def size(self) -> Dollar:
+        return self.__size_______
+    
+    def address(self) -> Dollar:
+        return self.__address____
 
 class IntStruct(Struct):
     def __init__(self, name: str=""):
@@ -885,7 +888,7 @@ class Enum(UnsignedLe):
         return name
 
 def sizeof(struct: Struct) -> int:
-    return struct.__size_______
+    return struct.size()
 
 def addressof(struct: Struct) -> int:
-    return struct.__address____
+    return struct.address()
