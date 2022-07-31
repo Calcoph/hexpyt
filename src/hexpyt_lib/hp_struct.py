@@ -105,19 +105,16 @@ def translate_struct(ts: TranslateState):
                 ts.attribs.append((class_name, att_name, 0, ts.indentation_count))
                 ts.current_attribs.append(att_name)
         else:
-            print(ts.cur_line)
             if "}" in ts.cur_line:
                 ts.indentation_count -= 1
                 ts.cur_line = ts.cur_line.replace("}", "")
             cur_indent = ts.indentation_count
             ts.cur_line += "\n"
             if "{" in ts.cur_line:
-                print(ts.cur_line)
                 ts.indentation_count += 1
                 ts.cur_line = ts.cur_line.replace(" {", ":")
                 ts.cur_line = ts.cur_line.replace("{", ":")
             ts.cur_line = ts.cur_line.lstrip()
-            print(cur_indent)
             ts.attribs.append((plain_text,
                             ts.cur_line,
                             0,

@@ -77,7 +77,6 @@ hexpat definition:
         else:
             if this_value is not None:
                 cur_value = parseint(this_value)
-            print(f"{val_name} = {cur_value}\n")
             string += f"{val_name} = {cur_value}\n"
         cur_value += 1
     return string
