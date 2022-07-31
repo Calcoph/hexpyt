@@ -847,7 +847,7 @@ class EnumException(Exception):
 
 V = TypeVar('V', bound=IntStruct|RealNum|Character|Bool)
 
-class Enum(Struct):
+class Enum(UnsignedLe):
     __lengthed__types_____ = [type(UnsignedLe), type(SignedLe), type(RealNum), type(Character), type(Bool)]
     def __init__(self, type_: Type[V]|int, value: V=None, name: str=""):
         if isinstance(type_, int):
@@ -865,16 +865,11 @@ class Enum(Struct):
             errormsg += "\tchar, char16\n"
             errormsg += "\tBool"
             raise EnumException(errormsg)
-        self._enum__value_____ = value
-        self.__byte__amount_____ = byte_amount
-        super().__init__(name)
+        super().__init__(byte_amount, value, name)
 
     def name(self) -> str:
-        if super().name(self) != "" or self.value().name() != "":
-            if super().name(self) != "":
-                name = super().name(self)
-            else:
-                name = self.value().name()
+        if super().name(self) != "":
+            name = super().name(self)
             if self.value() in self._enum__dict___:
                 name = f"{name}: {self._enum__dict___[self.value()]}"
             else:
@@ -885,22 +880,6 @@ class Enum(Struct):
             else:
                 name = f"???"
         return name
-    
-    def value(self) -> V:
-        return self._enum__value_____
-
-    def inner_value(self):
-        return self.value().value()
-
-    def __matmul__(self, other):
-        if not (isinstance(other, Dollar) or isinstance(other, IntStruct)):
-            raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {type(other)} was used instead')
-        if isinstance(other, IntStruct):
-            other = other.to_dollar()
-        starting_offset = other.copy()
-        self._enum__value_____ = UnsignedLe(self.__byte__amount_____) @ other
-        super().init_struct(starting_offset, other.copy())
-        return self
 
 def sizeof(struct: Struct) -> int:
     return struct.__size_______

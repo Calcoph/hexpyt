@@ -21,7 +21,7 @@ class TranslateState:
             ("//", "#"),
             ("else if", "elif"),
             ("::", "."),
-            ("break", "self.breaked = True\0return self"),
+            ("break", "self.break_()\0return self"),
             ("continue", "return self"),
             ("true", "True"),
             ("false", "False")
