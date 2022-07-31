@@ -235,7 +235,7 @@ class Dollar:
         return self.offset.__complex__()
 
     def __int__(self):
-        return self.offset
+        return int(self.offset)
 
     def __float__(self):
         return self.offset.__float__()
@@ -538,7 +538,7 @@ class IntStruct(Struct):
         return self.___value_____.__complex__()
 
     def __int__(self):
-        return self.___value_____
+        return int(self.___value_____)
 
     def __float__(self):
         return self.___value_____.__float__()

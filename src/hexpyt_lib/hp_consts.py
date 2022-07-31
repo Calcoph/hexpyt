@@ -25,8 +25,8 @@ class TranslateState:
             ("continue", "return self"),
             ("true", "True"),
             ("false", "False"),
-            ("_dollar___offset=", "_dollar___offset.offset =")
-            ("_dollar___offset =", "_dollar___offset.offset =")
+            ("_dollar___offset=", "_dollar___offset.offset ="),
+            ("_dollar___offset =", "_dollar___offset.offset ="),
             ("_dollar___offset  =", "_dollar___offset.offset =")
         ]
         self.cur_line = None
