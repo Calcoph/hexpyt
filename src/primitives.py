@@ -848,17 +848,25 @@ class EnumException(Exception):
 V = TypeVar('V', bound=IntStruct|RealNum|Character|Bool)
 
 class Enum(Struct):
-    __valid____types_____ = [type(IntStruct), type(RealNum), type(Character), type(Bool)]
-    def __init__(self, type_: Type[V], value: V=None, name: str=""):
-        if type(type_) not in self.__valid____types_____:
+    __lengthed__types_____ = [type(UnsignedLe), type(SignedLe), type(RealNum), type(Character), type(Bool)]
+    def __init__(self, type_: Type[V]|int, value: V=None, name: str=""):
+        if isinstance(type_, int):
+            byte_amount = type_
+        elif type_ in self.__lengthed__types_____:
+            pass
+        elif type_ == type(Bool):
+            pass
+        else:
             errormsg = "Enum types must be one of the following: \n"
-            errormsg += "\tIntStruct: u8, s16, ...\n"
+            errormsg += "\tan integer (amount of bytes per enum value)\n"
+            errormsg += "\tUnsignedLe: u8, u16, ...\n"
+            errormsg += "\tSignedLe: s8, s16, ...\n"
             errormsg += "\tFloat, double\n"
             errormsg += "\tchar, char16\n"
             errormsg += "\tBool"
             raise EnumException(errormsg)
         self._enum__value_____ = value
-        self.___type_____ = type_
+        self.__byte__amount_____ = byte_amount
         super().__init__(name)
 
     def name(self) -> str:
@@ -885,48 +893,14 @@ class Enum(Struct):
         return self.value().value()
 
     def __matmul__(self, other):
-        self._enum__value_____ = self.___type_____() @ other
+        if not (isinstance(other, Dollar) or isinstance(other, IntStruct)):
+            raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {type(other)} was used instead')
+        if isinstance(other, IntStruct):
+            other = other.to_dollar()
+        starting_offset = other.copy()
+        self._enum__value_____ = UnsignedLe(self.__byte__amount_____) @ other
+        super().init_struct(starting_offset, other.copy())
         return self
-
-I = TypeVar('I', bound=IntStruct)
-
-class IntEnum(Enum, IntStruct):
-    def __init__(self, type_: I, value: V=None, name: str=""):
-        if type_ != type(IntStruct):
-            errormsg = "IntEnum type must be: \n"
-            errormsg += "\tIntStruct: u8, s16, ..."
-            raise EnumException(errormsg)
-        super().__init__(type_, value, name)
-
-R = TypeVar('R', bound=RealNum)
-
-class FloatEnum(Enum, RealNum):
-    def __init__(self, type_: R, value: V=None, name: str=""):
-        if type_ != type(RealNum):
-            errormsg = "FloatEnum type must be: \n"
-            errormsg += "\tRealNum: Float, double"
-            raise EnumException(errormsg)
-        super().__init__(type_, value, name)
-
-C = TypeVar('C', bound=IntStruct)
-
-class CharEnum(Enum, Character):
-    def __init__(self, type_: C, value: V=None, name: str=""):
-        if type_ != type(Character):
-            errormsg = "CharEnum type must be: \n"
-            errormsg += "\tCharacter: char, char16"
-            raise EnumException(errormsg)
-        super().__init__(type_, value, name)
-
-B = TypeVar('B', bound=IntStruct)
-
-class BoolEnum(Enum, Bool):
-    def __init__(self, type_: B, value: V=None, name: str=""):
-        if type_ != type(Bool):
-            errormsg = "BoolEnum type must be: \n"
-            errormsg += "\tBool"
-            raise EnumException(errormsg)
-        super().__init__(type_, value, name)
 
 def sizeof(struct: Struct) -> int:
     return struct.__size_______

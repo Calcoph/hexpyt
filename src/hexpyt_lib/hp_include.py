@@ -1,6 +1,8 @@
 import os
 import sys
 
+from hexpyt_lib.hp_consts import TranslateState
+
 macos = "MacOs"
 other = "Other"
 if sys.platform.startswith("win32"):
@@ -63,7 +65,7 @@ Paths searched:
 
     return path
 
-def get_symbols(rel_path, extra_paths: list[str]):
+def get_symbols(rel_path, extra_paths: list[str], ts: TranslateState):
     path = get_path(rel_path, extra_paths)
     with open(path, "r") as f:
         lines = f.readlines()
@@ -77,7 +79,19 @@ def get_symbols(rel_path, extra_paths: list[str]):
             if len(words) == 2 and words[0] == "using":
                 new_symbol = words[1].split(";")[0]
                 new_symbols.append(new_symbol)
-            if words[0] == "struct":
+            if words[0] == "#include":
+                if '"' in ts.cur_line:
+                    path = ts.cur_line.split('"')[1]
+                elif "<" in ts.cur_line:
+                    path = ts.cur_line.split("<")[1].split(">")[0]
+                else:
+                    raise Exception("Error while parsing #include")
+                get_symbols(path, extra_paths, ts)
+            elif words[0] == "#define":
+                const = words[1]
+                replacement = " ".join(words[2:])
+                ts.defines.append((const, replacement))
+            elif words[0] == "struct":
                 struct_name = list(words[1])
                 if struct_name[-1] == "\n":
                     struct_name = struct_name[:-1]
@@ -94,12 +108,4 @@ def get_symbols(rel_path, extra_paths: list[str]):
                 bitfield_name = "".join(bitfield_name)
                 new_symbols.append(bitfield_name)
 
-        elif struct_name != "":
-            if line[0] == "}":
-                struct_name = ""
-
-        elif bitfield_name != "":
-            if line[0] == "}":
-                bitfield_name = ""
-
-    return new_symbols
+    ts.type_names.extend(new_symbols)

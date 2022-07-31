@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from src.hexpyt_lib.hp_consts import *
+from hexpyt_lib.hp_consts import *
 
 def make_bitfield(name: str, attributes: list[Tuple[str, int]], docstring: str, indentation):
     string = f"""\
@@ -82,18 +82,18 @@ hexpat definition:
 
 def translate_bitfield(ts: TranslateState):
     ts.docstring += ts.old_line
-    if line.lstrip()[0] == "}":
+    if ts.cur_line.lstrip()[0] == "}":
         ts.final_string += make_bitfield(ts.bitfield_name, ts.attribs, ts.docstring, ts.indentation)
         ts.attribs = []
         ts.current_attribs = []
         ts.bitfield_name = ""
         ts.docstring = ""
     else:
-        line = line.lstrip()
-        line = line.rstrip()
-        line = line.split(";")[0]
-        if "#" in line:
-            ts.attribs.append((plain_text, line))
+        ts.cur_line = ts.cur_line.lstrip()
+        ts.cur_line = ts.cur_line.rstrip()
+        ts.cur_line = ts.cur_line.split(";")[0]
+        if "#" in ts.cur_line:
+            ts.attribs.append((plain_text, ts.cur_line))
         else:
-            words = line.split(": ")
+            words = ts.cur_line.split(": ")
             ts.attribs.append((words[0], int(words[1])))

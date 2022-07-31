@@ -1,5 +1,5 @@
 from typing import Tuple
-from src.hexpyt_lib.hp_consts import *
+from hexpyt_lib.hp_consts import *
 
 def make_struct(name: str, attributes: list[Tuple[str, str, int, int]], docstring: str, indentation):
     string = f"""\
@@ -65,18 +65,17 @@ hexpat definition:
 
 def translate_struct(ts: TranslateState):
     ts.docstring += ts.old_line
-    if line[0] == "}":
+    if ts.cur_line[0] == "}":
         ts.final_string += make_struct(ts.struct_name, ts.attribs, ts.docstring, ts.indentation)
         ts.attribs = []
         ts.current_attribs = []
         ts.struct_name = ""
         ts.docstring = ""
     else:
-        line = line.lstrip()
-        line = line.rstrip()
-        line = line.split(";")[0]
-        line = line.replace("$", "_dollar___offset")
-        words = line.split(" ")
+        ts.cur_line = ts.cur_line.lstrip()
+        ts.cur_line = ts.cur_line.rstrip()
+        ts.cur_line = ts.cur_line.split(";")[0]
+        words = ts.cur_line.split(" ")
         try_padding = words[0].split("[")
         if try_padding[0] == "padding":
             length = try_padding[1]
@@ -106,18 +105,21 @@ def translate_struct(ts: TranslateState):
                 ts.attribs.append((class_name, att_name, 0, ts.indentation_count))
                 ts.current_attribs.append(att_name)
         else:
-            if "}" in line:
+            print(ts.cur_line)
+            if "}" in ts.cur_line:
                 ts.indentation_count -= 1
-                line = line.replace("}", "")
+                ts.cur_line = ts.cur_line.replace("}", "")
             cur_indent = ts.indentation_count
-            line += "\n"
-            if "{" in line:
+            ts.cur_line += "\n"
+            if "{" in ts.cur_line:
+                print(ts.cur_line)
                 ts.indentation_count += 1
-                line = line.replace(" {", ":")
-                line = line.replace("{", ":")
-            line = line.lstrip()
+                ts.cur_line = ts.cur_line.replace(" {", ":")
+                ts.cur_line = ts.cur_line.replace("{", ":")
+            ts.cur_line = ts.cur_line.lstrip()
+            print(cur_indent)
             ts.attribs.append((plain_text,
-                            line,
+                            ts.cur_line,
                             0,
                             cur_indent
                         ))

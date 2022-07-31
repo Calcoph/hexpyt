@@ -7,6 +7,7 @@ class TranslateState:
         self.padding_count = 0
         self.struct_name = ""
         self.bitfield_name = ""
+        self.enum_desc = ("", "")
         self.function_name = ""
         self.docstring = ""
         self.type_names = primitives.struct_names
@@ -20,11 +21,12 @@ class TranslateState:
             ("//", "#"),
             ("else if", "elif"),
             ("::", "."),
-            ("break", "self.breaked = True\nreturn self #! TODO: INDENT THIS LIKE THE LINE ABOVE SO IT COMPILES"),
+            ("break", "self.breaked = True\0return self"),
             ("continue", "return self"),
             ("true", "True"),
             ("false", "False")
         ]
+        self.cur_line = None
 
         self.final_string = header
         self.indentation = indentation
