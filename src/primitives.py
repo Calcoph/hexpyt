@@ -245,6 +245,7 @@ class Struct:
     
     def size(self) -> int:
         self.__size_______
+
 class IntStruct(Struct):
     def __init__(self, name: str=""):
         self.___value_____: int
@@ -822,6 +823,7 @@ class Array(list[T], Struct):
             raise Exception(f'An object of class "Dollar" must be used with the "@" operator. {type(other)} was used instead')
         if isinstance(other, IntStruct):
             other = other.to_dollar()
+        other_copy = other.copy()
         self.clear()
         if isinstance(self.___length__, int) or isinstance(self.___length__, IntStruct):
             for _ in range(0, self.___length__):
@@ -836,6 +838,7 @@ class Array(list[T], Struct):
                     break
         else:
             raise Exception(f"Array lengths other than int or while statements are not supported. Received length: {self.___length__}")
+        Struct.init_struct(self, other_copy, other.copy())
         return self
 
 class EnumException(Exception):
