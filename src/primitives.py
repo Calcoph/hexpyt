@@ -230,9 +230,9 @@ class Struct:
         self.___breaked___ = False
     
     def init_struct(self, starting_offset: Dollar, end_offset: Dollar):
-        self.__address____ = starting_offset.offset
-        self.___dollar______ = end_offset
-        self.__size_______ = end_offset.offset - self.__address____
+        self.__address____ = starting_offset.copy()
+        self.___dollar______ = end_offset.copy()
+        self.__size_______ = end_offset.copy() - self.__address____
     
     def name(self) -> str:
         return self.____name________
