@@ -69,79 +69,104 @@ class Dollar:
         return self.offset.__length_hint__()
     
     def __add__(self, other):
-        return self.offset.__add__(int(other))
+        new_offset = self.offset.__add__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __sub__(self, other):
-        return self.offset.__sub__(int(other))
+        new_offset = self.offset.__sub__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __mul__(self, other):
-        return self.offset.__mul__(int(other))
+        new_offset = self.offset.__mul__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __truediv__(self, other):
-        return self.offset.__truediv__(int(other))
+        new_offset = self.offset.__truediv__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __floordiv__(self, other):
-        return self.offset.__floordiv__(int(other))
+        new_offset = self.offset.__floordiv__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __mod__(self, other):
-        return self.offset.__mod__(int(other))
+        new_offset = self.offset.__mod__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __divmod__(self, other):
-        return self.offset.__divmod__(int(other))
+        new_offset = self.offset.__divmod__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __pow__(self, other):
-        return self.offset.__pow__(int(other))
+        new_offset = self.offset.__pow__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __lshift__(self, other):
-        return self.offset.__lshift__(int(other))
+        new_offset = self.offset.__lshift__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __rshift__(self, other):
-        return self.offset.__rshift__(int(other))
+        new_offset = self.offset.__rshift__(int(other))
+        return Dollar(new_offset, self.byts)
     
     def __and__(self, other):
-        return self.offset.__and__(int(other))
+        new_offset = self.offset.__and__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __xor__(self, other):
-        return self.offset.__xor__(int(other))
+        new_offset = self.offset.__xor__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __radd__(self, other):
-        return self.offset.__radd__(int(other))
+        new_offset = self.offset.__radd__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __rsub__(self, other):
-        return self.offset.__rsub__(int(other))
+        new_offset = self.offset.__rsub__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __rmul__(self, other):
-        return self.offset.__rmul__(int(other))
+        new_offset = self.offset.__rmul__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __rtruediv__(self, other):
-        return self.offset.__rtruediv__(int(other))
+        new_offset = self.offset.__rtruediv__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __rfloordiv__(self, other):
-        return self.offset.__rfloordiv__(int(other))
+        new_offset = self.offset.__rfloordiv__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __rmod__(self, other):
-        return self.offset.__rmod__(int(other))
+        new_offset = self.offset.__rmod__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __rdivmod__(self, other):
-        return self.offset.__rdivmod__(int(other))
+        new_offset = self.offset.__rdivmod__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __rpow__(self, other):
-        return self.offset.__rpow__(int(other))
+        new_offset = self.offset.__rpow__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __rlshift__(self, other):
-        return self.offset.__rlshift__(int(other))
+        new_offset = self.offset.__rlshift__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __rrshift__(self, other):
-        return self.offset.__rrshift__(int(other))
+        new_offset = self.offset.__rrshift__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __rand__(self, other):
-        return self.offset.__rand__(int(other))
+        new_offset = self.offset.__rand__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __rxor__(self, other):
-        return self.offset.__rxor__(int(other))
+        new_offset = self.offset.__rxor__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __ror__(self, other):
-        return self.offset.__ror__(int(other))
+        new_offset = self.offset.__ror__(int(other))
+        return Dollar(new_offset, self.byts)
 
     def __iadd__(self, other):
         self.offset += int(other)
