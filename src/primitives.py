@@ -816,7 +816,7 @@ class Array(list[T], Struct):
         self.___type_____ = type_
         self.___length__ = length
         list.__init__(self)
-        Struct.__init__(name)
+        Struct.__init__(self, name)
     
     def __matmul__(self, other):
         if not (isinstance(other, Dollar) or isinstance(other, IntStruct)):
@@ -852,10 +852,10 @@ class Enum(Struct):
     def __init__(self, type_: Type[V]|int, value: V=None, name: str=""):
         if isinstance(type_, int):
             byte_amount = type_
-        elif type_ in self.__lengthed__types_____:
-            pass
-        elif type_ == type(Bool):
-            pass
+        elif type(type_) in self.__lengthed__types_____:
+            byte_amount = type_().length()
+        elif type(type_) == type(Bool):
+            byte_amount = 1
         else:
             errormsg = "Enum types must be one of the following: \n"
             errormsg += "\tan integer (amount of bytes per enum value)\n"

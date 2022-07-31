@@ -79,6 +79,18 @@ hexpat definition:
                 cur_value = parseint(this_value)
             string += f"{val_name} = {cur_value}\n"
         cur_value += 1
+    
+    string += f"""
+{indentation}def __init__(self, value=None, name: str=""):
+{indentation}{indentation}\"\"\"
+{indentation}{indentation}enum
+
+{indentation}{indentation}Args:
+{indentation}{indentation}{indentation}value (optional): Defaults to None.
+{indentation}{indentation}{indentation}name (str, optional): The name of this instance. Can be whatever you want or just an empty string. Defaults to "".
+{indentation}{indentation}\"\"\"
+{indentation}{indentation}super().__init__({desc[1]}, value, name)
+"""
     return string
 
 def translate_enum(ts: TranslateState):

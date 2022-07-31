@@ -107,5 +107,9 @@ def get_symbols(rel_path, extra_paths: list[str], ts: TranslateState):
                     bitfield_name = bitfield_name[:-1]
                 bitfield_name = "".join(bitfield_name)
                 new_symbols.append(bitfield_name)
+            elif words[0] == "enum":
+                enum_name = "".join(words[1:])
+                split = enum_name.split(":")
+                new_symbols.append(split[0])
 
     ts.type_names.extend(new_symbols)
