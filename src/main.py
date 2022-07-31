@@ -12,7 +12,7 @@ def get_header() -> str:
     final_string += "u8, u16, u24, u32, u48, u64, u96, u128, "
     final_string += "s8, s16, s24, s32, s48, s64, s96, s128, "
     final_string += "Float, double, char, char16, Bool, "
-    final_string += "Padding, Array, sizeof, addressof\n"
+    final_string += "Padding, Array, Enum, sizeof, addressof\n"
     final_string += """
 # Template to read from a file. follow the instructions.
 # _dollar___offset has this name so it doesn't clash with others. Feel free to rename it. 
