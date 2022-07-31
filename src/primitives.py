@@ -239,7 +239,10 @@ class Struct:
     
     def breaked(self) -> bool:
         return self.___breaked___
-    
+
+    def break_(self):
+        self.___breaked___ = True
+
     def dollar(self) -> Dollar:
         return self.___dollar______
     
