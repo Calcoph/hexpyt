@@ -27,7 +27,11 @@ class Dollar:
         return read_bytes
     
     def read_unsigned(self, amount: int) -> u128:
-        return u128() @ self.copy()
+        new_dollar = self.copy()
+        new_val = UnsignedLe(amount) @ new_dollar
+        new_val = u128(new_val)
+        new_val.___dollar______ = new_dollar
+        return new_val
     
     def copy(self):
         return Dollar(self.offset, self.byts)
