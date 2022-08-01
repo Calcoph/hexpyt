@@ -908,8 +908,8 @@ class Enum(UnsignedLe):
         super().__init__(byte_amount, value, name)
 
     def name(self) -> str:
-        if super().name(self) != "":
-            name = super().name(self)
+        if super().name() != "":
+            name = super().name()
             if self.value() in self._enum__dict___:
                 name = f"{name}: {self._enum__dict___[self.value()]}"
             else:
