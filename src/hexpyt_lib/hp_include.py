@@ -40,13 +40,17 @@ You can fix it in 2 ways.
     to
         "include_path = '<The include path goes here>'"
 """)
+    searched_paths = ""
     extra_paths.append(include_path)
     extra_paths.append(include_path2)
     found = False
     for e_path in extra_paths:
+        if e_path[-1] not in ["/", "\\"]:
+            e_path += "/"
         path = e_path+rel_path
         file = path.split("/")[-1]
         folder = "/".join(path.split("/")[:-1])
+        searched_paths += f"\n    * {e_path}"
         try:
             if file not in os.listdir(folder):
                 continue
@@ -58,9 +62,7 @@ You can fix it in 2 ways.
     if not found:
         raise Exception(f"""
 {rel_path} not found.
-Paths searched:
-    * {include_path}
-    * {include_path2}
+Paths searched:{searched_paths}
 """)
 
     return path
