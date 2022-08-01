@@ -290,7 +290,7 @@ class IntStruct(Struct):
         super().__init__(name)
     
     def value(self) -> int:
-        self.___value_____
+        return self.___value_____
 
     def to_dollar(self) -> Dollar:
         return Dollar(self.___value_____, self.___dollar______.byts)
