@@ -33,6 +33,9 @@ class Dollar:
         new_val.___dollar______ = new_dollar
         return new_val
     
+    def eof(self) -> bool:
+        return self.offset >= len(self.byts) 
+    
     def copy(self):
         return Dollar(self.offset, self.byts)
 
@@ -352,13 +355,13 @@ class IntStruct(Struct):
     def __floordiv__(self, other) -> IntStruct:
         result = self.___value_____.__floordiv__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
 
     def __mod__(self, other) -> IntStruct:
         result = self.___value_____.__mod__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
 
     def __divmod__(self, other):
@@ -367,67 +370,67 @@ class IntStruct(Struct):
     def __pow__(self, other) -> IntStruct:
         result = self.___value_____.__pow__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
 
     def __lshift__(self, other) -> IntStruct:
         result = self.___value_____.__lshift__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
 
     def __rshift__(self, other) -> IntStruct:
         result = self.___value_____.__rshift__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
     
     def __and__(self, other) -> IntStruct:
         result = self.___value_____.__and__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
 
     def __xor__(self, other) -> IntStruct:
         result = self.___value_____.__xor__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
 
     def __radd__(self, other) -> IntStruct:
         result = self.___value_____.__radd__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
 
     def __rsub__(self, other) -> IntStruct:
         result = self.___value_____.__rsub__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
 
     def __rmul__(self, other) -> IntStruct:
         result = self.___value_____.__rmul__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
 
     def __rtruediv__(self, other) -> IntStruct:
         result = self.___value_____.__rtruediv__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
 
     def __rfloordiv__(self, other) -> IntStruct:
         result = self.___value_____.__rfloordiv__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
 
     def __rmod__(self, other) -> IntStruct:
         result = self.___value_____.__rmod__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
 
     def __rdivmod__(self, other):
@@ -439,31 +442,31 @@ class IntStruct(Struct):
     def __rlshift__(self, other) -> IntStruct:
         result = self.___value_____.__rlshift__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
 
     def __rrshift__(self, other) -> IntStruct:
         result = self.___value_____.__rrshift__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
 
     def __rand__(self, other) -> IntStruct:
         result = self.___value_____.__rand__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
 
     def __rxor__(self, other) -> IntStruct:
         result = self.___value_____.__rxor__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
 
     def __ror__(self, other) -> IntStruct:
         result = self.___value_____.__ror__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
 
     def __iadd__(self, other):
@@ -517,25 +520,25 @@ class IntStruct(Struct):
     def __neg__(self, other) -> IntStruct:
         result = self.___value_____.__neg__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
 
     def __pos__(self, other) -> IntStruct:
         result = self.___value_____.__pos__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
 
     def __abs__(self, other) -> IntStruct:
         result = self.___value_____.__abs__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
 
     def __invert__(self, other) -> IntStruct:
         result = self.___value_____.__invert__(int(other))
         result = type(self)(result)
-        result.___dollar______ = self.___dollar______.copy()
+        result.init_struct(self.address().copy(), self.dollar().copy())
         return result
     
     def __complex__(self):
@@ -866,7 +869,7 @@ class Array(list[T], Struct):
         if isinstance(self.___length__, int) or isinstance(self.___length__, IntStruct):
             for _ in range(0, self.___length__):
                 self.append(self.___type_____() @ other)
-                if self[-1].___breaked___:
+                if self[-1].___breaked___ or other.eof():
                     break
         elif "while" in self.___length__:
             bool_statement = self.___length__.split("while(")[1].split(")")[:-1]
@@ -874,7 +877,7 @@ class Array(list[T], Struct):
             bool_statement = bool_statement.replace("_dollar___offset", "other")
             while eval(bool_statement):
                 self.append(self.___type_____() @ other)
-                if self[-1].___breaked___:
+                if self[-1].___breaked___ or other.eof():
                     break
         else:
             raise Exception(f"Array lengths other than int or while statements are not supported. Received length: {self.___length__}")
