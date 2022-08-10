@@ -13,7 +13,7 @@ struct_names = [
 def le_to_int(byts: bytes):
     value = 0
     for (exponent, byte) in enumerate(byts):
-        value += byte * 256**exponent
+        value += byte << 8*exponent
     return value
 
 class Dollar:
@@ -636,11 +636,10 @@ class SignedLe(IntStruct):
         negative_threshold_bytes = b'\x80'
         for _ in range(1,self.___length_____):
             negative_threshold_bytes = b'\x00' + negative_threshold_bytes
-        negative_threshold = 0
-        for (exponent, byte) in enumerate(negative_threshold_bytes):
-            negative_threshold += byte << 8*exponent
-        max_ = negative_threshold*2+1
-        self.___value_____ = -(max_ - self.___value_____)-1
+        negative_threshold = le_to_int(negative_threshold_bytes)
+        max_ = negative_threshold*2
+        if self.___value_____ > negative_threshold:
+            self.___value_____ = 0-(max_ - self.___value_____)
         super().init_struct(starting_offset, other.copy())
         return self
 
