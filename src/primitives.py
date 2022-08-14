@@ -828,7 +828,7 @@ class Padding(Struct):
         return self
     
     def __repr__(self):
-        return f"padding[{self.___length______}]"
+        return f"padding[{self.___length______}]: {self.value()}"
     
     def __str__(self):
         return f"padding[{self.___length______}]"
