@@ -33,5 +33,10 @@ struct File {
     Data data[header.element_amount];
 };
 
-// The line below won't be translated to python, it will be ignored
+// The line below will be translated to python, but it won't run because 0x00 is an int instead of a dollar
+// Manually replace the line below.
+// from:
+//     @ (0x00)
+// to:
+//     @ Dollar(0x00, byts)
 File file @ 0x00;
