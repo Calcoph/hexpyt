@@ -1,3 +1,5 @@
 ignore
 __pycache__
 releases
+hexpat_std____
+.vscode

@@ -13,7 +13,7 @@ struct_names = [
 def le_to_int(byts: bytes):
     value = 0
     for (exponent, byte) in enumerate(byts):
-        value += byte * 256**exponent
+        value += byte << 8*exponent
     return value
 
 class Dollar:
@@ -26,6 +26,10 @@ class Dollar:
         self.offset += amount
         return read_bytes
     
+    def read_unsigned(self, amount: int) -> UnsignedLe:
+        copy = self.copy()
+        return UnsignedLe(amount) @ copy
+
     def copy(self):
         return Dollar(self.offset, self.byts)
 
@@ -277,19 +281,28 @@ class IntStruct(Struct):
     def __add__(self, other) -> IntStruct:
         result = self.value.__add__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __sub__(self, other) -> IntStruct:
         result = self.value.__sub__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __mul__(self, other) -> IntStruct:
         result = self.value.__mul__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __truediv__(self, other):
@@ -298,13 +311,19 @@ class IntStruct(Struct):
     def __floordiv__(self, other) -> IntStruct:
         result = self.value.__floordiv__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __mod__(self, other) -> IntStruct:
         result = self.value.__mod__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __divmod__(self, other):
@@ -313,67 +332,109 @@ class IntStruct(Struct):
     def __pow__(self, other) -> IntStruct:
         result = self.value.__pow__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __lshift__(self, other) -> IntStruct:
         result = self.value.__lshift__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __rshift__(self, other) -> IntStruct:
         result = self.value.__rshift__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
     
     def __and__(self, other) -> IntStruct:
         result = self.value.__and__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __xor__(self, other) -> IntStruct:
         result = self.value.__xor__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
+        return result
+    
+    def __or__(self, other) -> IntStruct:
+        result = self.value.__or__(int(other))
+        result = type(self)(result)
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __radd__(self, other) -> IntStruct:
         result = self.value.__radd__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __rsub__(self, other) -> IntStruct:
         result = self.value.__rsub__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __rmul__(self, other) -> IntStruct:
         result = self.value.__rmul__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __rtruediv__(self, other) -> IntStruct:
         result = self.value.__rtruediv__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __rfloordiv__(self, other) -> IntStruct:
         result = self.value.__rfloordiv__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __rmod__(self, other) -> IntStruct:
         result = self.value.__rmod__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __rdivmod__(self, other):
@@ -385,31 +446,46 @@ class IntStruct(Struct):
     def __rlshift__(self, other) -> IntStruct:
         result = self.value.__rlshift__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __rrshift__(self, other) -> IntStruct:
         result = self.value.__rrshift__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __rand__(self, other) -> IntStruct:
         result = self.value.__rand__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __rxor__(self, other) -> IntStruct:
         result = self.value.__rxor__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __ror__(self, other) -> IntStruct:
         result = self.value.__ror__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __iadd__(self, other):
@@ -463,25 +539,37 @@ class IntStruct(Struct):
     def __neg__(self, other) -> IntStruct:
         result = self.value.__neg__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __pos__(self, other) -> IntStruct:
         result = self.value.__pos__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __abs__(self, other) -> IntStruct:
         result = self.value.__abs__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
 
     def __invert__(self, other) -> IntStruct:
         result = self.value.__invert__(int(other))
         result = type(self)(result)
-        result.dollar = self.dollar.copy()
+        try:
+            result.dollar = self.dollar.copy()
+        except AttributeError:
+            pass
         return result
     
     def __complex__(self):

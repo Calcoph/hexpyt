@@ -308,10 +308,10 @@ def remove_namespaces(lines: List[str]) -> List[str]:
 
     return final_lines
 
-def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List[str]=[]) -> str:
+def translate_lines(lines: List[str], indentation: str="    ", extra_paths: List[str]=[], primitives_path: str="") -> str:
     lines = remove_namespaces(lines)
     padding_count = 0
-    final_string = "from primitives import Dollar, Struct, BitField, IntStruct, "
+    final_string = f"from {primitives_path}primitives import Dollar, Struct, BitField, IntStruct, "
     final_string += "u8, u16, u24, u32, u48, u64, u96, u128, "
     final_string += "s8, s16, s24, s32, s48, s64, s96, s128, "
     final_string += "Float, double, char, char16, Bool, "
@@ -337,7 +337,15 @@ _dollar___offset = Dollar(0x00, byts)
     attribs = []
     indentation_count = 0
     opening_brackets = 0
-    defines = [("std::print", "print"), ("$", "_dollar___offset"), ("//", "#"), ("else if", "elif"), ("::", ".")]
+    defines = [
+        ("std::print", "print"),
+        ("$", "_dollar___offset"),
+        ("//", "#"),
+        ("else if", "elif"),
+        ("::", "."),
+        ("&&", "and"),
+        ("||", "or")
+    ]
     for line in lines:
         old_line = line
         for (const, replacement) in defines:
@@ -501,21 +509,21 @@ _dollar___offset = Dollar(0x00, byts)
 
     return final_string
 
-def translate_text(text: str, indentation: str="    ", extra_paths: List[str]=[]) -> str:
+def translate_text(text: str, indentation: str="    ", extra_paths: List[str]=[], primitives_path: str="") -> str:
     lines = text.splitlines(keepends=True)
-    return translate_lines(lines, indentation, extra_paths)
+    return translate_lines(lines, indentation, extra_paths, primitives_path)
 
-def translate_text_to_file(text: str, output_file_path: str, indentation: str="    ", extra_paths: List[str]=[]):
+def translate_text_to_file(text: str, output_file_path: str, indentation: str="    ", extra_paths: List[str]=[], primitives_path: str=""):
     lines = text.splitlines(keepends=True)
-    final_string = translate_lines(lines, indentation, extra_paths)
+    final_string = translate_lines(lines, indentation, extra_paths, primitives_path)
     with open(output_file_path, "w") as f:
         f.write(final_string)
 
-def translate_file(input_file_path: str, output_file_path: str, indentation: str="    ", extra_paths: List[str]=[]):
+def translate_file(input_file_path: str, output_file_path: str, indentation: str="    ", extra_paths: List[str]=[], primitives_path: str=""):
     with open(input_file_path, "r") as f:
         lines = f.readlines()
 
-    final_string = translate_lines(lines, indentation, extra_paths)
+    final_string = translate_lines(lines, indentation, extra_paths, primitives_path)
 
     with open(output_file_path, "w") as f:
         f.write(final_string)
