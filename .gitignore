@@ -1,3 +1,8 @@
 ignore
 __pycache__
 releases
+/hexpat_std____
+/.vscode
+/src
+/tests
+translate_std.py
